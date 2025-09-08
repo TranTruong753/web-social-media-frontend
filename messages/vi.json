@@ -1,0 +1,9 @@
+{
+    "meta": {
+        "title": "Mạng xã hội"
+    },
+    "SigninPage": {
+        "title": "Đăng nhập với tài khoản của bạn",
+        "text-btn-sign-email": " Đăng nhập bằng email"
+    }
+}

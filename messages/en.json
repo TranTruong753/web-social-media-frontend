@@ -1,0 +1,9 @@
+{
+    "meta": {
+        "title": "Social-Media"
+    },
+    "SigninPage": {
+        "title": "Sign in with your account",
+        "text-btn-sign-email": "Sign in with your email"
+    }
+}
