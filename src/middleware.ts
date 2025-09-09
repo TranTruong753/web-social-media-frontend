@@ -12,7 +12,6 @@ export async function verifyJWT(token: string|undefined, secret: string|undefine
     const { payload } = await jwtVerify(token, secretKey)
     return payload
   } catch (err) {
-    console.error("JWT verify failed:", err)
     return null
   }
 }
@@ -26,11 +25,7 @@ export default async function middleware(req: NextRequest) {
   // 3. Decrypt the session from the cookie
   const token = req.cookies.get("access_token")?.value
 
-  console.log("token", token)
-
   const user = await verifyJWT(token, process.env.NEXT_PUBLIC_JWT_SECRET)
-
-  console.log(" user", user)
 
   // 4. Redirect to /login if the user is not authenticated
   if (isProtectedRoute && !user) {
@@ -41,9 +36,7 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/', req.nextUrl))
   }
 
-
   return NextResponse.next()
-
 }
 
 export const config = {

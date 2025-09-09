@@ -4,6 +4,15 @@
     },
     "SigninPage": {
         "title": "Đăng nhập với tài khoản của bạn",
-        "text-btn-sign-email": " Đăng nhập bằng email"
+        "text-btn-sign-email": "Đăng nhập bằng email",
+        "text-field-pw": "Mật khẩu",
+        "text-btn-sign-in": "Đăng nhập",
+        "text-btn-sign-in-pending": "Đang tải",
+        "text-btn-sign-up": "Tạo tài khoản",
+        "text-forget-pw": "Quên mật khẩu?",
+        "text-error-form": {
+            "email": "Vui lòng nhập email hợp lệ!",
+            "password": "Phải dài ít nhất 8 ký tự!"
+        }
     }
 }

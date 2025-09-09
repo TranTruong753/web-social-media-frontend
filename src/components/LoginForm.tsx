@@ -1,8 +1,10 @@
 'use client'
-import { Box, Button, Container, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Link, Paper, Stack, TextField, Typography } from "@mui/material";
 import { LockOutlined } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useTranslations } from "next-intl";
+import { useActionState } from "react";
+import { signup } from "@/app/actions/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -10,14 +12,7 @@ export default function LoginForm() {
 
     const t = useTranslations('SigninPage');
 
-    const handleLogin = () => {
-        let link = ''
-        if (API_URL) {
-            link = `${API_URL}/auth/google`
-        }
-        window.location.href = link;
-    };
-
+    const [state, action, isPending] = useActionState(signup, undefined)
 
     return (
         <Container component="main" maxWidth="xs">
@@ -32,52 +27,82 @@ export default function LoginForm() {
                     fullWidth
                     variant="outlined"
                     sx={{ mt: 3, mb: 2, fontWeight: '500' }}
-                    onClick={handleLogin}
-                    
-                >                  
+                    href={`${API_URL}/auth/google`}
+                    tabIndex={5}
+                >
                     {t('text-btn-sign-email')}
                 </Button>
 
 
                 <Box component={'span'} sx={{ m: 1, width: '100%', height: '1px', background: '#aaa' }}></Box>
 
-                <Box component="form" sx={{ mt: 1, width: '100%' }}>
+                <Box component="form" action={action} sx={{ mt: 1, width: '100%' }}>
 
                     <TextField
                         size="small"
                         margin="normal"
-                        required
                         fullWidth
                         id="email"
                         label="Email"
                         name="email"
                         autoComplete="email"
                         autoFocus
-                    // value={email}
-                    // onChange={(e) => setEmail(e.target.value)}
+                        error={!!state?.errors?.email}
+                        helperText={state?.errors?.email ? t('text-error-form.email') : " "}
+                        sx={{ mb: 0 }}
+                        inputProps={{ tabIndex: 1 }}
+                        defaultValue={state?.values?.email ?? ''}
                     />
+
                     <TextField
                         size="small"
                         margin="normal"
-                        required
                         fullWidth
                         name="password"
-                        label="Mật khẩu"
+                        label={t('text-field-pw')}
                         type="password"
                         id="password"
                         autoComplete="current-password"
-                    // value={password}
-                    // onChange={(e) => setPassword(e.target.value)}
+                        error={!!state?.errors?.password}
+                        helperText={state?.errors?.password ? t('text-error-form.password') : " "}
+                        sx={{ mb: 0 }}
+                        inputProps={{ tabIndex: 2 }}
+                        defaultValue={state?.values?.password ?? ''}
                     />
+
+
+                    <Stack alignItems={'flex-end'} justifyContent={'center'}>
+                        <Link href="/sign-in/identify" underline="hover" fontSize={'14px'}  >
+                            {t('text-forget-pw')}
+                        </Link>
+                    </Stack>
+
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    // disabled={isPending}
+                        sx={{
+                            mt: 2,
+                            mb: 2,
+                            textTransform: 'none'
+                        }}
+                        tabIndex={3}
+                        disabled={isPending}
                     >
-                        {/* {isPending ? 'Đang xử lý...' : 'Đăng nhập'} */}
-                        Đăng nhập
+                        {isPending ? t('text-btn-sign-in-pending'): t('text-btn-sign-in')}
+      
+                    </Button>
+
+                    <Button
+                        variant="outlined"
+                        href="/sign-up"
+                        fullWidth
+                        sx={{
+                            textTransform: 'none'
+                        }}
+                        tabIndex={4}
+                    >
+                        {t('text-btn-sign-up')}
                     </Button>
 
 

@@ -4,6 +4,15 @@
     },
     "SigninPage": {
         "title": "Sign in with your account",
-        "text-btn-sign-email": "Sign in with your email"
+        "text-btn-sign-email": "Sign in with your email",
+        "text-field-pw": "Password",
+        "text-btn-sign-in": "Sign in",
+        "text-btn-sign-in-pending": "Loading",
+        "text-btn-sign-up": "Create account",
+        "text-forget-pw": "Forget password?",
+        "text-error-form": {
+            "email" : "Please enter a valid email!",
+            "password": "Be at least 8 characters long!"
+        }
     }
 }

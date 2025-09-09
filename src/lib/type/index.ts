@@ -15,3 +15,8 @@ export type UserType = {
   codeExpired: Date;
   tokenHash: string
 }
+
+export type LoginForm = {
+  password: string;
+  email: string;
+}
