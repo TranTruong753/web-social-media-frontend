@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import React from "react";
 import { NextIntlClientProvider } from "next-intl";
+import { NotificationsProvider } from "@toolpad/core";
 
 
 const geistSans = Geist({
@@ -34,7 +35,17 @@ export default function RootLayout({
       >
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <NextIntlClientProvider>
-            {children}
+            <NotificationsProvider
+            
+              slotProps={{
+                snackbar: {
+                  anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                  autoHideDuration: 2000
+                },
+              }}
+            >
+              {children}
+            </NotificationsProvider>
           </NextIntlClientProvider>
         </AppRouterCacheProvider>
       </body>

@@ -1,11 +1,9 @@
-import LoginForm from "@/components/LoginForm";
+import StepSignUp from "@/components/StepSignUp";
 
 
 const page = () => {
     return (
-    
-        <p>Sign-up</p>
-
+        <StepSignUp/>
     );
 }
 

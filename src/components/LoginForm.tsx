@@ -3,8 +3,11 @@ import { Box, Button, Container, Link, Paper, Stack, TextField, Typography } fro
 import { LockOutlined } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { signup } from "@/app/actions/auth";
+import { useNotifications } from "@toolpad/core";
+import { useRouter } from "next/navigation";
+
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -12,7 +15,25 @@ export default function LoginForm() {
 
     const t = useTranslations('SigninPage');
 
+    const notifications = useNotifications();
+
+    const router = useRouter()
+
     const [state, action, isPending] = useActionState(signup, undefined)
+
+    useEffect(() => {
+        if (!state?.message) return;
+        
+        notifications.show(state.message, {
+            severity: state.success ? "success" : "error",
+        });
+
+        if (state.success) {
+            router.push("/");
+        }
+    }, [state, notifications]);
+
+
 
     return (
         <Container component="main" maxWidth="xs">
@@ -87,10 +108,11 @@ export default function LoginForm() {
                             textTransform: 'none'
                         }}
                         tabIndex={3}
-                        disabled={isPending}
+                        // disabled={isPending}
+                        loading={isPending}
                     >
-                        {isPending ? t('text-btn-sign-in-pending'): t('text-btn-sign-in')}
-      
+                        {isPending ? t('text-btn-sign-in-pending') : t('text-btn-sign-in')}
+
                     </Button>
 
                     <Button
