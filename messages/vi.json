@@ -14,5 +14,33 @@
             "email": "Vui lòng nhập email hợp lệ!",
             "password": "Phải dài ít nhất 8 ký tự!"
         }
+    },
+    "SignUpPage": {
+        "title": "Đăng ký tài khoản",
+        "title-second": "hoặc",
+        "text-btn-sign-email": "Đăng nhập bằng email",
+        "text-field-fn": "Tên",
+        "text-field-ln": "Họ",
+        "text-field-dob": "Ngày sinh",
+        "text-field-genders": "Giới tính",
+        "text-field-gender": {
+            "Female": "Nữ",
+            "Male": "Nam",
+            "Other": "Khác"
+        },
+        "text-field-phone": "Số điện thoại",
+        "text-field-pw": "Mật khẩu",
+        "text-caption": "Bạn đã có tài khoản?",
+        "text-caption-second": "Đăng nhập",
+        "text-btn-sign-up": "Đăng ký",
+        "text-btn-sign-up-pending": "Đang tải"
+    },
+    "ActivatePage": {
+        "title": "Kích hoạt tài khoản",
+        "text-field-codeId": "Mã kích hoạt",
+        "text-caption": "Gửi lại mã",
+        "text-btn-activate": "Kích hoạt",
+        "text-success": "Bạn đã kích hoạt tài khoản thành công! trờ về ",
+        "text-link-return": "trang đăng nhập"
     }
 }

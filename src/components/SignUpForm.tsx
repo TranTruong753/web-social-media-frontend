@@ -1,18 +1,28 @@
 'use client'
-import { Box, Button, Container, Link, Paper, Stack, Step, StepButton, Stepper, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, FormControlLabel, FormLabel, Paper, Radio, RadioGroup, Stack, TextField, Typography } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import { useTranslations } from "next-intl"; import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import React from "react";
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+type SignUpForm = {
+    handleComplete : () => void
+}
 
-export default function SignUpForm() {
+export default function SignUpForm({handleComplete} : SignUpForm) {
 
-    const t = useTranslations('SigninPage');
+    const t = useTranslations('SignUpPage');
+
+    const handleSignUpForm = async() => {
+        handleComplete()
+    }
 
 
     return (
@@ -20,11 +30,11 @@ export default function SignUpForm() {
             <Paper elevation={3} sx={{ p: 4, mt: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <AccountCircleIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
                 <Typography component="h1" variant="h5" noWrap fontSize={'21px'} fontWeight={'bold'}>
-                    Sign up for an account
+                    {t('title')}
                 </Typography>
 
                 <Typography component="h2" variant="h5" noWrap fontSize={'21px'} fontWeight={'bold'} marginBottom={0}>
-                    or
+                    {t('title-second')}
                 </Typography>
 
                 <Button
@@ -49,7 +59,7 @@ export default function SignUpForm() {
                             margin="normal"
                             fullWidth
                             id="lastName"
-                            label="Last Name"
+                            label={t('text-field-ln')}
                             name="lastName"
                             sx={{ mb: 0 }}
                         />
@@ -58,7 +68,7 @@ export default function SignUpForm() {
                             margin="normal"
                             fullWidth
                             id="firstName"
-                            label="First Name"
+                            label={t('text-field-fn')}
                             name="firstName"
                             sx={{ mb: 0 }}
                         />
@@ -66,8 +76,7 @@ export default function SignUpForm() {
 
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
-
-                            label={'Date of birth'}
+                            label={t('text-field-dob')}
                             // disabled={disabled}
                             format="DD/MM/YYYY"
                             sx={{
@@ -75,10 +84,11 @@ export default function SignUpForm() {
                                 '& .MuiFormLabel-asterisk': {
                                     color: 'red'
                                 },
+                                mb: 2
 
                             }}
                             // minDate={minDate}
-                            // maxDate={maxDate}
+                            maxDate={dayjs()}
                             slotProps={{
                                 textField: {
                                     size: 'small',
@@ -92,12 +102,24 @@ export default function SignUpForm() {
                         />
                     </LocalizationProvider>
 
+                    <FormLabel id="demo-row-radio-buttons-group-label">{t('text-field-genders')}</FormLabel>
+                    <RadioGroup
+                        row
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        defaultValue="male"
+                        name="radio-buttons-group"
+                    >
+                        <FormControlLabel value="male" control={<Radio />} label={t('text-field-gender.Male')} />
+                        <FormControlLabel value="female" control={<Radio />} label={t('text-field-gender.Female')} />
+                        <FormControlLabel value="other" control={<Radio />} label={t('text-field-gender.Other')} />
+                    </RadioGroup>
+
                     <TextField
                         size="small"
                         margin="normal"
                         fullWidth
                         id="phone"
-                        label="Phone"
+                        label={t('text-field-phone')}
                         name="phone"
                         sx={{ mb: 0 }}
                     />
@@ -147,17 +169,19 @@ export default function SignUpForm() {
                             textTransform: 'none'
                         }}
                         tabIndex={3}
+                        onClick={()=>handleSignUpForm()}
                     // loading={isPending}
                     >
                         {/* {isPending ? t('text-btn-sign-in-pending') : t('text-btn-sign-in')} */}
-                        sign up
+                        {t('text-btn-sign-up')}
 
                     </Button>
 
                     <Stack alignItems={'center'}>
                         <Typography component={'span'} variant="caption" noWrap fontSize={'14px'} fontWeight={'normal'}>
-                            Already have an account?
-                            <Link href="/sign-in" underline="hover" > Sign in</Link>
+                            {t('text-caption')}
+                            {/* <Link href="/sign-in" underline="hover" > {t('text-caption-second')}</Link> */}
+                            <Link href={"/sign-in"} className=" hover:underline"  > {t('text-caption-second')}</Link>
                         </Typography>
                     </Stack>
 

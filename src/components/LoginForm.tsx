@@ -13,7 +13,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export default function LoginForm() {
 
-    const t = useTranslations('SigninPage');
+    const t = useTranslations('SignInPage');
 
     const notifications = useNotifications();
 
@@ -117,7 +117,7 @@ export default function LoginForm() {
 
                     <Button
                         variant="outlined"
-                        href="/sign-up"
+                        onClick={()=>{router.push("/sign-up");}}
                         fullWidth
                         sx={{
                             textTransform: 'none'

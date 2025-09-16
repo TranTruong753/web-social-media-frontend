@@ -1,23 +1,21 @@
 'use client'
-import { Box, Button, Container, Link, Paper, Stack, Step, StepButton, Stepper, TextField, Typography } from "@mui/material";
-import GoogleIcon from '@mui/icons-material/Google';
-import { useTranslations } from "next-intl"; import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { Box, Button, Container, Link, Paper, Stack, TextField, Typography } from "@mui/material";
 import React from "react";
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import { useTranslations } from "next-intl";
 
 export default function ActiveForm() {
+    const t = useTranslations('ActivatePage');
+    
     return (
         <Container maxWidth="xs">
             <Paper elevation={3} sx={{ p: 4, mt: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <LockOpenIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
                 <Typography component="h1" variant="h5" noWrap fontSize={'21px'} fontWeight={'bold'}>
-                    active account
+                    {t('title')}
                 </Typography>
 
-    
+
                 <Box noValidate component="form" sx={{ mt: 1, width: '100%' }}>
 
                     <TextField
@@ -25,7 +23,7 @@ export default function ActiveForm() {
                         margin="normal"
                         fullWidth
                         id="activeCode"
-                        label="active code"
+                        label= {t('text-field-codeId')}
                         name="activeCode"
                         sx={{ mb: 0 }}
                     />
@@ -43,13 +41,13 @@ export default function ActiveForm() {
                     // loading={isPending}
                     >
                         {/* {isPending ? t('text-btn-sign-in-pending') : t('text-btn-sign-in')} */}
-                        active
+                        {t('text-btn-activate')}
                     </Button>
 
                     <Stack alignItems={'center'}>
                         <Typography component={'span'} variant="caption" noWrap fontSize={'14px'} fontWeight={'normal'}>
-                          
-                            <Link href="/sign-in" underline="hover" >Gửi lại mã</Link>
+
+                            <Link href="#" underline="hover" >{t('text-caption')}</Link>
                         </Typography>
                     </Stack>
 

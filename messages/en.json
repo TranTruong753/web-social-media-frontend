@@ -2,7 +2,7 @@
     "meta": {
         "title": "Social-Media"
     },
-    "SigninPage": {
+    "SignInPage": {
         "title": "Sign in with your account",
         "text-btn-sign-email": "Sign in with your email",
         "text-field-pw": "Password",
@@ -11,8 +11,36 @@
         "text-btn-sign-up": "Create account",
         "text-forget-pw": "Forget password?",
         "text-error-form": {
-            "email" : "Please enter a valid email!",
+            "email": "Please enter a valid email!",
             "password": "Be at least 8 characters long!"
         }
+    },
+    "SignUpPage": {
+        "title": "Sign up for an account",
+        "title-second": "or",
+        "text-btn-sign-email": "Sign in with your email",
+        "text-field-fn": "First name",
+        "text-field-ln": "Last name",
+        "text-field-dob": "Date of birth",
+        "text-field-genders": "Gender",
+        "text-field-gender": {
+            "Female": "Female",
+            "Male": "Male",
+            "Other": "Other"
+        },
+        "text-field-phone": "Phone",
+        "text-field-pw": "Password",
+        "text-caption": "Already have an account?",
+        "text-caption-second": "Sign in",
+        "text-btn-sign-up": "Sign up",
+        "text-btn-sign-up-pending": "Loading"
+    },
+    "ActivatePage": {
+        "title": "Activate account",
+        "text-field-codeId": "Activate code",
+        "text-caption": "Resend code",
+        "text-btn-activate": "Activate",
+        "text-success": "You have successfully activated your account! Return to",
+        "text-link-return": "login page"
     }
 }
