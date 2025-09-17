@@ -1,6 +1,6 @@
-import { LoginForm } from "@/lib/type";
+import { ActiveForm, LoginForm, SignupForm } from "@/lib/type";
 import axios, { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
+
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -19,4 +19,32 @@ export const loginApi = async (data: LoginForm) => {
     throw error
   }
 
+}
+
+export const signupApi = async (data: SignupForm) => {
+  try {
+    const res = await axios
+      .post(`${API_URL}/auth/register`, data)
+
+    return res
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || "register failed")
+    }
+    throw error
+  }
+}
+
+export const activateAccountApi = async (data: ActiveForm) => {
+  try {
+    const res = await axios
+      .post(`${API_URL}/auth/check-code`, data)
+
+    return res
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || "activate failed")
+    }
+    throw error
+  }
 }

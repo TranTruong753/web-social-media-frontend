@@ -40,6 +40,7 @@
         "text-field-codeId": "Activate code",
         "text-caption": "Resend code",
         "text-btn-activate": "Activate",
+        "text-btn-activate-pending": "Loading",
         "text-success": "You have successfully activated your account! Return to",
         "text-link-return": "login page"
     }

@@ -128,12 +128,13 @@ export default function StepSignUp() {
                 ) : (
                     activeStep === 0 &&
                     (<React.Fragment>
-                        <SignUpForm handleComplete={handleComplete} />
+                        <SignUpForm  />
+                        <Button onClick={handleComplete}>Next</Button>
 
                     </React.Fragment>) ||
                     activeStep === steps.length - 1 &&
                     (<React.Fragment>
-                        <ActiveForm/>
+                        <ActiveForm />
                         <Button
                             color="inherit"
                             disabled={activeStep === 0}

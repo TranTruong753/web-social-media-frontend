@@ -40,6 +40,7 @@
         "text-field-codeId": "Mã kích hoạt",
         "text-caption": "Gửi lại mã",
         "text-btn-activate": "Kích hoạt",
+        "text-btn-activate-pending": "Đang tải",
         "text-success": "Bạn đã kích hoạt tài khoản thành công! trờ về ",
         "text-link-return": "trang đăng nhập"
     }

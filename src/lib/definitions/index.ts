@@ -13,18 +13,35 @@ export const SigninFormSchema = z.object({
     .trim(),
 })
 
+export const ActivateFormSchema = z.object({
+  codeId: z.uuid({ message: "Invalid UUID format." }).trim().min(1, { message: "codeId is required." })
+})
+
 export const SignupFormSchema = z.object({
-  lastName: z.string().trim(),
-  firstName: z.string().trim(),
+  lastName: z.string().trim().min(1, { message: "Last name is required." }),
+  firstName: z.string().trim().min(1, { message: "Firts name is required." }),
+  phone: z.string()
+    .regex(/^0\d{9,10}$/, { message: "Please enter a valid phone." }),
+  birthDate: z.date({
+    message: "Birth date is required.",
+  }).max(new Date(), { message: "Birth date cannot be in the future." })
+    .refine(
+      (date) => {
+        const today = new Date();
+        const minDate = new Date(
+          today.getFullYear() - 16,
+          today.getMonth(),
+          today.getDate()
+        );
+        return date <= minDate;
+      },
+      { message: "You must be at least 16 years old." }
+    ),
   email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
+
   password: z
     .string()
     .min(8, { message: 'Be at least 8 characters long' })
-    // .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
-    // .regex(/[0-9]/, { message: 'Contain at least one number.' })
-    // .regex(/[^a-zA-Z0-9]/, {
-    //   message: 'Contain at least one special character.',
-    // })
     .trim(),
 })
 
@@ -41,5 +58,42 @@ export type FormState =
     message?: string;
   }
   | undefined
+
+
+
+
+type SignupSuccess = {
+  success: true;
+  message: string;
+  values: { id: string;[key: string]: any };
+  errors?: {
+    lastName?: string[];
+    firstName?: string[];
+    gender?: string[];
+    phone?: string[];
+    birthDate?: string[];
+    email?: string[];
+    password?: string[];
+    
+  }
+};
+
+type SignupError = {
+  success?: boolean;
+  message?: string;
+  values?: any;
+  errors?: {
+    lastName?: string[];
+    firstName?: string[];
+    gender?: string[];
+    phone?: string[];
+    birthDate?: string[];
+    email?: string[];
+    password?: string[];
+    
+  }
+};
+
+export type SignupState = SignupSuccess | SignupError | undefined;
 
 

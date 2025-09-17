@@ -4,7 +4,7 @@ import { LockOutlined } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect } from "react";
-import { signup } from "@/app/actions/auth";
+import { signin } from "@/app/actions/auth";
 import { useNotifications } from "@toolpad/core";
 import { useRouter } from "next/navigation";
 
@@ -19,7 +19,7 @@ export default function LoginForm() {
 
     const router = useRouter()
 
-    const [state, action, isPending] = useActionState(signup, undefined)
+    const [state, action, isPending] = useActionState(signin, undefined)
 
     useEffect(() => {
         if (!state?.message) return;

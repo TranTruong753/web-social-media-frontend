@@ -5,25 +5,39 @@ import { useTranslations } from "next-intl"; import { LocalizationProvider } fro
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import React from "react";
+import React, { useActionState } from "react";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signup } from "@/app/actions/auth";
+import { useNotifications } from "@toolpad/core";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-type SignUpForm = {
-    handleComplete : () => void
-}
 
-export default function SignUpForm({handleComplete} : SignUpForm) {
+
+export default function SignUpForm() {
 
     const t = useTranslations('SignUpPage');
 
-    const handleSignUpForm = async() => {
-        handleComplete()
-    }
+    const notifications = useNotifications();
 
+    const [state, action, isPending] = useActionState(signup, undefined)
+
+    const router = useRouter()
+
+    React.useEffect(() => {
+        if (!state?.message) return;
+
+        if (state.success) {
+            router.push(`/activate?id=${state.values?.id}`)
+        } else {
+            notifications.show(state.message, {
+                severity: "error",
+            });
+        }
+
+    }, [state, notifications])
 
     return (
         <Container maxWidth="xs">
@@ -51,7 +65,7 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
 
                 <Box component={'span'} sx={{ m: 1, width: '100%', height: '1px', background: '#aaa' }}></Box>
 
-                <Box noValidate component="form" sx={{ mt: 1, width: '100%' }}>
+                <Box noValidate component="form" action={action} sx={{ mt: 1, width: '100%' }}>
 
                     <Stack direction="row" spacing={1} marginBottom={2}>
                         <TextField
@@ -62,6 +76,9 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
                             label={t('text-field-ln')}
                             name="lastName"
                             sx={{ mb: 0 }}
+                            error={!!state?.errors?.firstName}
+                            helperText={state?.errors?.firstName ? state?.errors?.firstName : " "}
+                            defaultValue={state?.values?.lastName ?? ''}
                         />
                         <TextField
                             size="small"
@@ -71,6 +88,9 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
                             label={t('text-field-fn')}
                             name="firstName"
                             sx={{ mb: 0 }}
+                            error={!!state?.errors?.lastName}
+                            helperText={state?.errors?.lastName ? state?.errors?.lastName : " "}
+                            defaultValue={state?.values?.firstName ?? ''}
                         />
                     </Stack>
 
@@ -87,16 +107,20 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
                                 mb: 2
 
                             }}
+
                             // minDate={minDate}
                             maxDate={dayjs()}
                             slotProps={{
                                 textField: {
+                                    id: 'birthDate',
+                                    name: 'birthDate',
                                     size: 'small',
                                     fullWidth: true,
                                     required: true,
                                     // ...(onBlur ? { onBlur } : {}),
-                                    // error,
-                                    // helperText
+                                    error: !!state?.errors?.birthDate,
+                                    helperText: state?.errors?.birthDate ? state?.errors?.birthDate : " ",
+                                    defaultValue: state?.values?.birthDate ?? ""
                                 }
                             }}
                         />
@@ -107,7 +131,7 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
                         row
                         aria-labelledby="demo-radio-buttons-group-label"
                         defaultValue="male"
-                        name="radio-buttons-group"
+                        name="gender"
                     >
                         <FormControlLabel value="male" control={<Radio />} label={t('text-field-gender.Male')} />
                         <FormControlLabel value="female" control={<Radio />} label={t('text-field-gender.Female')} />
@@ -122,6 +146,9 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
                         label={t('text-field-phone')}
                         name="phone"
                         sx={{ mb: 0 }}
+                        error={!!state?.errors?.phone}
+                        helperText={state?.errors?.phone ? state?.errors?.phone : " "}
+                        defaultValue={state?.values?.phone ?? ''}
                     />
 
 
@@ -133,11 +160,10 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
                         label="Email"
                         name="email"
                         // autoComplete="email"
-
-                        // error={!!state?.errors?.email}
-                        // helperText={state?.errors?.email ? t('text-error-form.email') : " "}
+                        error={!!state?.errors?.email}
+                        helperText={state?.errors?.email ? state?.errors?.email : " "}
                         // inputProps={{ tabIndex: 1 }}
-                        // defaultValue={state?.values?.email ?? ''}
+                        defaultValue={state?.values?.email ?? ''}
                         sx={{ mb: 0 }}
                     />
 
@@ -149,11 +175,11 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
                         label={t('text-field-pw')}
                         type="password"
                         id="password"
-                        // autoComplete="current-password"
-                        // error={!!state?.errors?.password}
-                        // helperText={state?.errors?.password ? t('text-error-form.password') : " "}
+                        autoComplete=""
+                        error={!!state?.errors?.password}
+                        helperText={state?.errors?.password ? state?.errors?.password : " "}
                         // inputProps={{ tabIndex: 2 }}
-                        // defaultValue={state?.values?.password ?? ''}
+                        defaultValue={state?.values?.password ?? ''}
                         sx={{ mb: 0 }}
                     />
 
@@ -169,11 +195,10 @@ export default function SignUpForm({handleComplete} : SignUpForm) {
                             textTransform: 'none'
                         }}
                         tabIndex={3}
-                        onClick={()=>handleSignUpForm()}
-                    // loading={isPending}
+                        // onClick={() => handleSignUpForm()}
+                        loading={isPending}
                     >
-                        {/* {isPending ? t('text-btn-sign-in-pending') : t('text-btn-sign-in')} */}
-                        {t('text-btn-sign-up')}
+                        {isPending ? t('text-btn-sign-up-pending') : t('text-btn-sign-up')}
 
                     </Button>
 

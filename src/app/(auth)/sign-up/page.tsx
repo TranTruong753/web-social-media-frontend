@@ -1,9 +1,10 @@
-import StepSignUp from "@/components/StepSignUp";
+import SignUpForm from "@/components/SignUpForm";
+
 
 
 const page = () => {
     return (
-        <StepSignUp/>
+        <SignUpForm/>
     );
 }
 
