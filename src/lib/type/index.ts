@@ -23,8 +23,10 @@ export type LoginForm = {
 }
 
 export type ActiveForm = {
+  id: string | null,
   codeId: string
 }
+
 
 export type SignupForm = {
   username: string;

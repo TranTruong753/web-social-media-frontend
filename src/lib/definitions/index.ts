@@ -14,7 +14,7 @@ export const SigninFormSchema = z.object({
 })
 
 export const ActivateFormSchema = z.object({
-  codeId: z.uuid({ message: "Invalid UUID format." }).trim().min(1, { message: "codeId is required." })
+  codeId: z.string().trim().min(1, { message: "codeId is required." })
 })
 
 export const SignupFormSchema = z.object({

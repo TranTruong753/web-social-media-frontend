@@ -1,10 +1,12 @@
 import SignUpForm from "@/components/SignUpForm";
 
 
-
 const page = () => {
     return (
-        <SignUpForm/>
+        <>
+            <SignUpForm />
+        </>
+
     );
 }
 

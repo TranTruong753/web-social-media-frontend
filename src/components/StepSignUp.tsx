@@ -1,5 +1,5 @@
 'use client'
-import { Box, Button, Container, Link, Paper, Stack, Step, StepButton, Stepper, Typography } from "@mui/material";
+import { Box, Button, Container, Step, StepButton, Stepper } from "@mui/material";
 import React from "react";
 import SignUpForm from "./SignUpForm";
 import ActiveForm from "./ActiveForm";

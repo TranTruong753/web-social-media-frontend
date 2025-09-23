@@ -43,7 +43,21 @@ export const activateAccountApi = async (data: ActiveForm) => {
     return res
   } catch (error) {
     if (error instanceof AxiosError) {
-      throw new Error(error.response?.data?.message || "activate failed")
+      throw new Error(error.response?.data?.message || "Activate failed")
+    }
+    throw error
+  }
+}
+
+export const resendCodeApi = async (id: string) => {
+  try {
+    const res = await axios
+      .post(`${API_URL}/auth/resend-code`, {id})
+
+    return res
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || "Resend code failed")
     }
     throw error
   }

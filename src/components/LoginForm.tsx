@@ -1,5 +1,5 @@
 'use client'
-import { Box, Button, Container, Link, Paper, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Container,Link, Paper, Stack, TextField, Typography } from "@mui/material";
 import { LockOutlined } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useTranslations } from "next-intl";
@@ -57,7 +57,7 @@ export default function LoginForm() {
 
                 <Box component={'span'} sx={{ m: 1, width: '100%', height: '1px', background: '#aaa' }}></Box>
 
-                <Box component="form" action={action} sx={{ mt: 1, width: '100%' }}>
+                <Box noValidate component="form" action={action} sx={{ mt: 1, width: '100%' }}>
 
                     <TextField
                         size="small"
@@ -124,7 +124,8 @@ export default function LoginForm() {
                         }}
                         tabIndex={4}
                     >
-                        {t('text-btn-sign-up')}
+                      {t('text-btn-sign-up')}
+                       
                     </Button>
 
 

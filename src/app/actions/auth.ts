@@ -1,5 +1,5 @@
 import { ActivateFormSchema, FormState, SigninFormSchema, SignupFormSchema, SignupState } from "@/lib/definitions"
-import { parseDDMMYYYY } from "@/lib/utils"
+import { parseDDMMYYYY, sleep } from "@/lib/utils"
 import { activateAccountApi, loginApi, signupApi } from "@/services/authServices"
 
 export async function signin(
@@ -20,7 +20,7 @@ export async function signin(
       values,
     }
   }
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
   try {
     await sleep(2000);
     const res = await loginApi(values) // axios throw nếu lỗi
@@ -99,42 +99,42 @@ export async function signup(
 
 }
 
-export async function activateAccount(
-  _: any,
-  formData: FormData
-) {
-  const values = {
-    codeId: formData.get('activeCode') as string,
-  }
+// export async function activateAccount(
+//   _: any,
+//   formData: FormData
+// ) {
+//   const values = {
+//     codeId: formData.get('activeCode') as string,
+//   }
 
-  const validatedFields = ActivateFormSchema.safeParse(values)
+//   const validatedFields = ActivateFormSchema.safeParse(values)
 
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      values,
-    }
-  }
+//   if (!validatedFields.success) {
+//     return {
+//       errors: validatedFields.error.flatten().fieldErrors,
+//       values,
+//     }
+//   }
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  try {
-    await sleep(2000);
-    const res = await activateAccountApi(values) // axios throw nếu lỗi
-    if (res?.status) {
-      console.log("res", res)
-      return {
-        success: true,
-        message: "Kích hoạt tài khoản thông tin thành công!"
-      };
-    }
-    return { success: true, message: "CÓ lỗi gì đang xảy ra! chúng tôi sẽ khác phục sớm" };
-  } catch (err: any) {
-    return {
-      values,
-      success: false,
-      message: err.message || "Kích hoạt tài khoản thất bại!", // ✅ thống nhất errors
-    }
-  }
 
-}
+//   try {
+//     await sleep(2000);
+//     const res = await activateAccountApi(values) // axios throw nếu lỗi
+//     if (res?.status) {
+//       console.log("res", res)
+//       return {
+//         success: true,
+//         message: "Kích hoạt tài khoản thông tin thành công!"
+//       };
+//     }
+//     return { success: true, message: "CÓ lỗi gì đang xảy ra! chúng tôi sẽ khác phục sớm" };
+//   } catch (err: any) {
+//     return {
+//       values,
+//       success: false,
+//       message: err.message || "Kích hoạt tài khoản thất bại!", // ✅ thống nhất errors
+//     }
+//   }
+
+// }
 
