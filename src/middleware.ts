@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 // 1. Specify protected and public routes
 const protectedRoutes = ['/', '/home']
-const publicRoutes = ['/sign-in', '/sign-up']
+const publicRoutes = ['/sign-in', '/sign-up', '/reset-password']
 
 export async function verifyJWT(token: string|undefined, secret: string|undefined) {
   if(!token) return null
