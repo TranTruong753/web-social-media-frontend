@@ -1,8 +1,8 @@
+import ResetPwForm from "@/components/ResetPwForm";
+
 const page = () => {
     return (
-        <div>
-            reset-password
-        </div>
+      <ResetPwForm/>
     );
 }
 

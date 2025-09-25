@@ -69,15 +69,6 @@ export const forgetPassword = async (email: string) => {
 }
 
 export const changePassword = async (id : string, codeId : string, password : string) => {
-  try {
-    const res = await axios
+    return await axios
       .post(`${API_URL}/auth/change-password`, { id, codeId, password })
-
-    return res
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(error.response?.data?.message || "Send code failed")
-    }
-    throw error
-  }
 }
