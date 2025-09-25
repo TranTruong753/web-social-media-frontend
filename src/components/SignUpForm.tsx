@@ -117,7 +117,6 @@ export default function SignUpForm() {
                                     size: 'small',
                                     fullWidth: true,
                                     required: true,
-                                    // ...(onBlur ? { onBlur } : {}),
                                     error: !!state?.errors?.birthDate,
                                     helperText: state?.errors?.birthDate ? state?.errors?.birthDate : " ",
                                     defaultValue: state?.values?.birthDate ?? ""
@@ -126,12 +125,13 @@ export default function SignUpForm() {
                         />
                     </LocalizationProvider>
 
-                    <FormLabel id="demo-row-radio-buttons-group-label">{t('text-field-genders')}</FormLabel>
+                    <FormLabel id="gender">{t('text-field-genders')}</FormLabel>
                     <RadioGroup
                         row
                         aria-labelledby="demo-radio-buttons-group-label"
                         defaultValue="male"
                         name="gender"
+                        id="gender"
                     >
                         <FormControlLabel value="male" control={<Radio />} label={t('text-field-gender.Male')} />
                         <FormControlLabel value="female" control={<Radio />} label={t('text-field-gender.Female')} />
@@ -195,7 +195,6 @@ export default function SignUpForm() {
                             textTransform: 'none'
                         }}
                         tabIndex={3}
-                        // onClick={() => handleSignUpForm()}
                         loading={isPending}
                     >
                         {isPending ? t('text-btn-sign-up-pending') : t('text-btn-sign-up')}
@@ -205,7 +204,6 @@ export default function SignUpForm() {
                     <Stack alignItems={'center'}>
                         <Typography component={'span'} variant="caption" noWrap fontSize={'14px'} fontWeight={'normal'}>
                             {t('text-caption')}
-                            {/* <Link href="/sign-in" underline="hover" > {t('text-caption-second')}</Link> */}
                             <Link href={"/sign-in"} className=" hover:underline"  > {t('text-caption-second')}</Link>
                         </Typography>
                     </Stack>

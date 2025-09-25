@@ -52,12 +52,31 @@ export const activateAccountApi = async (data: ActiveForm) => {
 export const resendCodeApi = async (id: string) => {
   try {
     const res = await axios
-      .post(`${API_URL}/auth/resend-code`, {id})
+      .post(`${API_URL}/auth/resend-code`, { id })
 
     return res
   } catch (error) {
     if (error instanceof AxiosError) {
       throw new Error(error.response?.data?.message || "Resend code failed")
+    }
+    throw error
+  }
+}
+
+export const forgetPassword = async (email: string) => {
+  return await axios
+      .post(`${API_URL}/auth/forget-password`, { email })
+}
+
+export const changePassword = async (id : string, codeId : string, password : string) => {
+  try {
+    const res = await axios
+      .post(`${API_URL}/auth/change-password`, { id, codeId, password })
+
+    return res
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || "Send code failed")
     }
     throw error
   }

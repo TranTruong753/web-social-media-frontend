@@ -1,8 +1,8 @@
+import React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import React from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { NotificationsProvider } from "@toolpad/core";
 
@@ -34,18 +34,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-          <NextIntlClientProvider>
-            <NotificationsProvider
-            
-              slotProps={{
-                snackbar: {
-                  anchorOrigin: { vertical: 'top', horizontal: 'right' },
-                  autoHideDuration: 2000
-                },
-              }}
-            >
-              {children}
-            </NotificationsProvider>
+          <NextIntlClientProvider>    
+              <NotificationsProvider           
+                slotProps={{
+                  snackbar: {
+                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    autoHideDuration: 2000
+                  },
+                }}
+              >
+                {children}
+              </NotificationsProvider>
+
           </NextIntlClientProvider>
         </AppRouterCacheProvider>
       </body>

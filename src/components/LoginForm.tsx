@@ -1,5 +1,5 @@
 'use client'
-import { Box, Button, Container,Link, Paper, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, FormLabel, IconButton, Modal, Paper, Stack, TextField, Typography } from "@mui/material";
 import { LockOutlined } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useTranslations } from "next-intl";
@@ -7,7 +7,9 @@ import { useActionState, useEffect } from "react";
 import { signin } from "@/app/actions/auth";
 import { useNotifications } from "@toolpad/core";
 import { useRouter } from "next/navigation";
-
+import React from "react";
+import { forgetPassword } from "@/services/authServices";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -23,7 +25,7 @@ export default function LoginForm() {
 
     useEffect(() => {
         if (!state?.message) return;
-        
+
         notifications.show(state.message, {
             severity: state.success ? "success" : "error",
         });
@@ -91,19 +93,14 @@ export default function LoginForm() {
                         defaultValue={state?.values?.password ?? ''}
                     />
 
-
-                    <Stack alignItems={'flex-end'} justifyContent={'center'}>
-                        <Link href="/sign-in/identify" underline="hover" fontSize={'14px'}  >
-                            {t('text-forget-pw')}
-                        </Link>
-                    </Stack>
+                    <ForgetPwComponent t={t} />
 
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         sx={{
-                            mt: 2,
+                            mt: 1,
                             mb: 2,
                             textTransform: 'none'
                         }}
@@ -117,15 +114,15 @@ export default function LoginForm() {
 
                     <Button
                         variant="outlined"
-                        onClick={()=>{router.push("/sign-up");}}
+                        onClick={() => { router.push("/sign-up"); }}
                         fullWidth
                         sx={{
                             textTransform: 'none'
                         }}
                         tabIndex={4}
                     >
-                      {t('text-btn-sign-up')}
-                       
+                        {t('text-btn-sign-up')}
+
                     </Button>
 
 
@@ -134,3 +131,140 @@ export default function LoginForm() {
         </Container>
     )
 }
+
+type ForgetPwType = {
+    t: ReturnType<typeof useTranslations>
+}
+
+function ForgetPwComponent({ t }: ForgetPwType) {
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+
+    return (
+        <Stack alignItems={'flex-end'} justifyContent={'center'}>
+            <Typography
+                onClick={handleOpen}
+
+                component="a" variant="caption" className=" text-blue-700 hover:underline cursor-pointer" fontSize={'13px'} >
+                {t('text-forget-pw')}
+            </Typography>
+            <ForgetPwModal handleClose={handleClose} open={open} />
+        </Stack>
+    )
+}
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 500,
+    bgcolor: 'background.paper',
+    border: 'none',
+    outline: 'none',
+    boxShadow: 24,
+
+
+};
+
+interface ForgetPwModalInterface {
+    handleClose: () => void,
+    open: boolean
+}
+
+function ForgetPwModal({ open, handleClose }: ForgetPwModalInterface) {
+
+    const [fieldEmail, setFieldEmail] = React.useState('')
+    const [fieldEmailError, setFieldEmailError] = React.useState('')
+    const [isLoading, setIsLoading] = React.useState(false)
+
+    const notifications = useNotifications()
+
+    const handleCloseModal = () => {
+        setFieldEmail("")
+        setFieldEmailError("")
+        return handleClose()
+    }
+
+    const handleSubmitForgetPw = async () => {
+        if (fieldEmail === '') return setFieldEmailError('Email cannot be blank!')
+
+        setIsLoading(true)
+
+        setFieldEmailError('')
+
+        try {
+            const res = await forgetPassword(fieldEmail)
+            if (res.status) notifications.show(res.data.message + "", { severity: 'success' })
+        } catch (error) {
+            console.log("error", error)
+            return notifications.show(error + "", { severity: 'error' })
+        } finally {
+            setIsLoading(false)
+        }
+        return handleCloseModal()
+    }
+
+    return (
+        <Modal
+            open={open}
+            onClose={(_, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    // chặn đóng khi click ngoài hoặc nhấn ESC
+                    return;
+                }
+                handleCloseModal(); // chỉ cho phép đóng khi bạn muốn
+            }}
+            // onClose={handleCloseModal}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+            disableRestoreFocus={true}
+        >
+            <Box sx={style}>
+                <Stack direction={'row'} justifyContent={'space-between'} sx={{ pt: 1, px: 1 }}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Forget password
+                    </Typography>
+
+                    <IconButton aria-label="delete" color="primary" onClick={handleCloseModal}>
+                        <ClearIcon />
+                    </IconButton>
+                </Stack>
+
+
+                <Box sx={{ mt: 2, px: 4, pb: 2 }} >
+
+                    <FormLabel id="email_forget">Please enter your email account</FormLabel>
+
+                    <TextField
+                        size="small"
+                        margin="normal"
+                        fullWidth
+                        id="email_forget"
+                        label="Email"
+                        name="email_forget"
+                        autoComplete="email"
+                        autoFocus
+                        required={true}
+                        value={fieldEmail}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            setFieldEmail(event.target.value);
+                        }}
+
+                        error={!!fieldEmailError}
+                        helperText={fieldEmailError ? fieldEmailError : " "}
+                 
+                    />
+
+                    <Stack direction={'column'} spacing={1}>
+                        <Button loading={isLoading} onClick={() => handleSubmitForgetPw()} variant="contained" sx={{ textTransform: 'none' }}>Send Code</Button>
+                        <Button variant="outlined" onClick={() => handleCloseModal()} sx={{ textTransform: 'none' }}>Cancel</Button>
+                    </Stack>
+                </Box>
+            </Box>
+        </Modal>
+    )
+}
+
