@@ -10,6 +10,11 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { forgetPassword } from "@/services/authServices";
 import ClearIcon from '@mui/icons-material/Clear';
+import { FormSendEmail, SendEmailForm } from "@/lib/definitions";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -19,7 +24,11 @@ export default function LoginForm() {
 
     const notifications = useNotifications();
 
-    const router = useRouter()
+    const router = useRouter();
+
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
     const [state, action, isPending] = useActionState(signin, undefined)
 
@@ -33,7 +42,7 @@ export default function LoginForm() {
         if (state.success) {
             router.push("/");
         }
-    }, [state, notifications]);
+    }, [state]);
 
 
 
@@ -93,7 +102,7 @@ export default function LoginForm() {
                         defaultValue={state?.values?.password ?? ''}
                     />
 
-                    <ForgetPwComponent t={t} />
+                    <ForgetPwComponent t={t} handleOpen={handleOpen} />
 
                     <Button
                         type="submit"
@@ -105,7 +114,6 @@ export default function LoginForm() {
                             textTransform: 'none'
                         }}
                         tabIndex={3}
-                        // disabled={isPending}
                         loading={isPending}
                     >
                         {isPending ? t('text-btn-sign-in-pending') : t('text-btn-sign-in')}
@@ -127,6 +135,8 @@ export default function LoginForm() {
 
 
                 </Box>
+
+                <ForgetPwModal handleClose={handleClose} open={open} />
             </Paper>
         </Container>
     )
@@ -134,13 +144,10 @@ export default function LoginForm() {
 
 type ForgetPwType = {
     t: ReturnType<typeof useTranslations>
+    handleOpen: () => void
 }
 
-function ForgetPwComponent({ t }: ForgetPwType) {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
+function ForgetPwComponent({ t, handleOpen }: ForgetPwType) {
 
     return (
         <Stack alignItems={'flex-end'} justifyContent={'center'}>
@@ -150,7 +157,7 @@ function ForgetPwComponent({ t }: ForgetPwType) {
                 component="a" variant="caption" className=" text-blue-700 hover:underline cursor-pointer" fontSize={'13px'} >
                 {t('text-forget-pw')}
             </Typography>
-            <ForgetPwModal handleClose={handleClose} open={open} />
+
         </Stack>
     )
 }
@@ -165,8 +172,6 @@ const style = {
     border: 'none',
     outline: 'none',
     boxShadow: 24,
-
-
 };
 
 interface ForgetPwModalInterface {
@@ -176,30 +181,39 @@ interface ForgetPwModalInterface {
 
 function ForgetPwModal({ open, handleClose }: ForgetPwModalInterface) {
 
-    const [fieldEmail, setFieldEmail] = React.useState('')
-    const [fieldEmailError, setFieldEmailError] = React.useState('')
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        setError,
+        reset,
+    } = useForm<FormSendEmail>({
+        resolver: zodResolver(SendEmailForm),
+        defaultValues: {
+            email_forget: ""
+        }
+    });
+
     const [isLoading, setIsLoading] = React.useState(false)
 
     const notifications = useNotifications()
 
     const handleCloseModal = () => {
-        setFieldEmail("")
-        setFieldEmailError("")
+        reset()
         return handleClose()
     }
 
-    const handleSubmitForgetPw = async () => {
-        if (fieldEmail === '') return setFieldEmailError('Email cannot be blank!')
-
+    const onSubmit: SubmitHandler<FormSendEmail> = async (data) => {
         setIsLoading(true)
 
-        setFieldEmailError('')
-
         try {
-            const res = await forgetPassword(fieldEmail)
+            const res = await forgetPassword(data.email_forget)
             if (res.status) notifications.show(res.data.message + "", { severity: 'success' })
         } catch (error) {
-            console.log("error", error)
+            setError('email_forget', {
+                type: 'manual',
+                message: 'Error !'
+            })
             return notifications.show(error + "", { severity: 'error' })
         } finally {
             setIsLoading(false)
@@ -217,7 +231,6 @@ function ForgetPwModal({ open, handleClose }: ForgetPwModalInterface) {
                 }
                 handleCloseModal(); // chỉ cho phép đóng khi bạn muốn
             }}
-            // onClose={handleCloseModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
             disableRestoreFocus={true}
@@ -234,32 +247,40 @@ function ForgetPwModal({ open, handleClose }: ForgetPwModalInterface) {
                 </Stack>
 
 
-                <Box sx={{ mt: 2, px: 4, pb: 2 }} >
+                <Box noValidate component={'form'} onSubmit={handleSubmit(onSubmit)} sx={{ mt: 2, px: 4, pb: 2 }} >
 
                     <FormLabel id="email_forget">Please enter your email account</FormLabel>
 
-                    <TextField
-                        size="small"
-                        margin="normal"
-                        fullWidth
-                        id="email_forget"
-                        label="Email"
+                    <Controller
                         name="email_forget"
-                        autoComplete="email"
-                        autoFocus
-                        required={true}
-                        value={fieldEmail}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                            setFieldEmail(event.target.value);
-                        }}
-
-                        error={!!fieldEmailError}
-                        helperText={fieldEmailError ? fieldEmailError : " "}
-                 
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                size="small"
+                                margin="normal"
+                                fullWidth
+                                id="email_forget"
+                                label="Email"
+                                autoComplete="email"
+                                autoFocus
+                                required={true}                   
+                                error={!!errors.email_forget}
+                                helperText={errors.email_forget?.message ? errors.email_forget?.message : " "}
+                            />
+                        )}
                     />
 
+
+
                     <Stack direction={'column'} spacing={1}>
-                        <Button loading={isLoading} onClick={() => handleSubmitForgetPw()} variant="contained" sx={{ textTransform: 'none' }}>Send Code</Button>
+                        <Button loading={isLoading}
+                            type="submit"
+                            variant="contained"
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Send Code
+                        </Button>
                         <Button variant="outlined" onClick={() => handleCloseModal()} sx={{ textTransform: 'none' }}>Cancel</Button>
                     </Stack>
                 </Box>

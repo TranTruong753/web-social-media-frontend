@@ -5,16 +5,19 @@ import { useTranslations } from "next-intl"; import { LocalizationProvider } fro
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import React, { useActionState } from "react";
+import React from "react";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signup } from "@/app/actions/auth";
 import { useNotifications } from "@toolpad/core";
+import { FormSignUpType, SignupFormSchema } from "@/lib/definitions";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { sleep } from "@/lib/utils";
+import { signupApi } from "@/services/authServices";
+import { AxiosError } from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
-
-
 
 export default function SignUpForm() {
 
@@ -22,22 +25,72 @@ export default function SignUpForm() {
 
     const notifications = useNotifications();
 
-    const [state, action, isPending] = useActionState(signup, undefined)
+    const formInitialState = {
+        lastName: "",
+        firstName: "",
+        gender: "male",
+        phone: "",
+        birthDate: null,
+        email: "",
+        password: ""
+    }
+
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        setError,
+        clearErrors,
+        reset,
+    } = useForm<FormSignUpType>({
+        resolver: zodResolver(SignupFormSchema),
+        defaultValues: formInitialState
+    });
+
+
+    const [isLoading, setIsLoading] = React.useState(false)
 
     const router = useRouter()
 
-    React.useEffect(() => {
-        if (!state?.message) return;
+    const onSubmit: SubmitHandler<FormSignUpType> = async (data) => {
+        console.log("data", data)
+        setIsLoading(true)
 
-        if (state.success) {
-            router.push(`/activate?id=${state.values?.id}`)
-        } else {
-            notifications.show(state.message, {
-                severity: "error",
-            });
+        const formatValues = {
+            username: `${data.lastName} ${data.firstName}`,
+            password: data.password,
+            email: data.email,
+            birthDate: data.birthDate ? dayjs(data.birthDate).format('YYYY-MM-DD') : "",
+            gender: data.gender,
+            phone: data.phone,
+        }
+        console.log("formatValues", formatValues)
+
+        try {
+            await sleep(2000);
+            const res = await signupApi(formatValues) // axios throw nếu lỗi
+            if (res?.status) {
+                console.log("res", res)
+                return router.push(`/activate?id=${res.data.user.id}`)
+            }
+        } catch (error) {
+            const err = error as AxiosError
+
+            if(err.response?.status === 500) {
+                notifications.show( "email already exists", { severity: 'error' })
+                return setError('email',{
+                    message: 'email already exists'
+                })
+            }
+          
+            return notifications.show(error + "", { severity: 'error' })
+
+        } finally {
+            setIsLoading(false)
         }
 
-    }, [state, notifications])
+    }
+
 
     return (
         <Container maxWidth="xs">
@@ -65,124 +118,158 @@ export default function SignUpForm() {
 
                 <Box component={'span'} sx={{ m: 1, width: '100%', height: '1px', background: '#aaa' }}></Box>
 
-                <Box noValidate component="form" action={action} sx={{ mt: 1, width: '100%' }}>
+                <Box noValidate component="form" 
+                    onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
 
                     <Stack direction="row" spacing={1} marginBottom={2}>
-                        <TextField
-                            size="small"
-                            margin="normal"
-                            fullWidth
-                            id="lastName"
-                            label={t('text-field-ln')}
+                        <Controller
                             name="lastName"
-                            sx={{ mb: 0 }}
-                            error={!!state?.errors?.firstName}
-                            helperText={state?.errors?.firstName ? state?.errors?.firstName : " "}
-                            defaultValue={state?.values?.lastName ?? ''}
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    size="small"
+                                    margin="normal"
+                                    fullWidth
+                                    id="lastName"
+                                    label={t('text-field-ln')}
+                                    sx={{ mb: 0 }}
+                                    error={!!errors.lastName}
+                                    helperText={errors.lastName?.message ? errors.lastName.message : " "}                          
+                                />
+                            )}
                         />
-                        <TextField
-                            size="small"
-                            margin="normal"
-                            fullWidth
-                            id="firstName"
-                            label={t('text-field-fn')}
+                        <Controller
                             name="firstName"
-                            sx={{ mb: 0 }}
-                            error={!!state?.errors?.lastName}
-                            helperText={state?.errors?.lastName ? state?.errors?.lastName : " "}
-                            defaultValue={state?.values?.firstName ?? ''}
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    size="small"
+                                    margin="normal"
+                                    fullWidth
+                                    id="firstName"
+                                    label={t('text-field-fn')}                       
+                                    sx={{ mb: 0 }}
+                                    error={!!errors.firstName}
+                                    helperText={errors.firstName?.message ? errors.firstName.message : " "}                        
+                                />
+                            )}
                         />
+
+
                     </Stack>
 
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                            label={t('text-field-dob')}
-                            // disabled={disabled}
-                            format="DD/MM/YYYY"
-                            sx={{
+                    <Controller
+                        name="birthDate"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-                                '& .MuiFormLabel-asterisk': {
-                                    color: 'red'
-                                },
-                                mb: 2
+                                <DatePicker
+                                    value={value ? dayjs(value) : null}
+                                    onChange={(newValue) => {
+                                        onChange(newValue ? newValue.toDate() : null); // ✅ convert về Date | null
+                                    }}
 
-                            }}
+                                    format="DD/MM/YYYY"
+                                    sx={{
 
-                            // minDate={minDate}
-                            maxDate={dayjs()}
-                            slotProps={{
-                                textField: {
-                                    id: 'birthDate',
-                                    name: 'birthDate',
-                                    size: 'small',
-                                    fullWidth: true,
-                                    required: true,
-                                    error: !!state?.errors?.birthDate,
-                                    helperText: state?.errors?.birthDate ? state?.errors?.birthDate : " ",
-                                    defaultValue: state?.values?.birthDate ?? ""
-                                }
-                            }}
-                        />
-                    </LocalizationProvider>
+                                        '& .MuiFormLabel-asterisk': {
+                                            color: 'red'
+                                        },
+                                        mb: 2
+
+                                    }}
+                                    maxDate={dayjs()}
+
+                                    slotProps={{
+                                        textField: {
+                                            id: 'birthDate',                                        
+                                            size: 'small',
+                                            fullWidth: true,
+                                            required: true,
+                                            error: !!errors.birthDate,
+                                            helperText: errors.birthDate?.message ?? " ",                                   
+                                        }
+                                    }}
+                                />
+
+                            </LocalizationProvider>
+                        )}
+                    />
 
                     <FormLabel id="gender">{t('text-field-genders')}</FormLabel>
-                    <RadioGroup
-                        row
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        defaultValue="male"
+
+                    <Controller
                         name="gender"
-                        id="gender"
-                    >
-                        <FormControlLabel value="male" control={<Radio />} label={t('text-field-gender.Male')} />
-                        <FormControlLabel value="female" control={<Radio />} label={t('text-field-gender.Female')} />
-                        <FormControlLabel value="other" control={<Radio />} label={t('text-field-gender.Other')} />
-                    </RadioGroup>
+                        control={control}
+                        render={({ field }) => (
+                            <RadioGroup {...field} row>
+                                <FormControlLabel value="male" control={<Radio />} label={t('text-field-gender.Male')} />
+                                <FormControlLabel value="female" control={<Radio />} label={t('text-field-gender.Female')} />
+                                <FormControlLabel value="other" control={<Radio />} label={t('text-field-gender.Other')} />
+                            </RadioGroup>
+                        )}
+                    />
 
-                    <TextField
-                        size="small"
-                        margin="normal"
-                        fullWidth
-                        id="phone"
-                        label={t('text-field-phone')}
+                    <Controller
                         name="phone"
-                        sx={{ mb: 0 }}
-                        error={!!state?.errors?.phone}
-                        helperText={state?.errors?.phone ? state?.errors?.phone : " "}
-                        defaultValue={state?.values?.phone ?? ''}
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                size="small"
+                                margin="normal"
+                                fullWidth
+                                id="phone"
+                                label={t('text-field-phone')}
+                                sx={{ mb: 0 }}
+                                error={!!errors.phone}
+                                helperText={errors.phone ? errors.phone.message : " "}                         
+                            />
+                        )}
                     />
 
 
-                    <TextField
-                        size="small"
-                        margin="normal"
-                        fullWidth
-                        id="email"
-                        label="Email"
+
+                    <Controller
                         name="email"
-                        // autoComplete="email"
-                        error={!!state?.errors?.email}
-                        helperText={state?.errors?.email ? state?.errors?.email : " "}
-                        // inputProps={{ tabIndex: 1 }}
-                        defaultValue={state?.values?.email ?? ''}
-                        sx={{ mb: 0 }}
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                size="small"
+                                margin="normal"
+                                fullWidth
+                                id="email"
+                                label="Email"                        
+                                sx={{ mb: 0 }}
+                                error={!!errors.email}
+                                helperText={errors.email ? errors.email.message : " "}
+                            // inputProps={{ tabIndex: 1 }}
+                            />
+                        )}
                     />
 
-                    <TextField
-                        size="small"
-                        margin="normal"
-                        fullWidth
+                    <Controller
                         name="password"
-                        label={t('text-field-pw')}
-                        type="password"
-                        id="password"
-                        autoComplete=""
-                        error={!!state?.errors?.password}
-                        helperText={state?.errors?.password ? state?.errors?.password : " "}
-                        // inputProps={{ tabIndex: 2 }}
-                        defaultValue={state?.values?.password ?? ''}
-                        sx={{ mb: 0 }}
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                size="small"
+                                margin="normal"
+                                fullWidth                         
+                                label={t('text-field-pw')}
+                                type="password"
+                                id="password"
+                                sx={{ mb: 0 }}              
+                                error={!!errors.password}
+                                helperText={errors.password ? errors.password.message : " "}                        
+                            />
+                        )}
                     />
-
 
 
                     <Button
@@ -195,9 +282,9 @@ export default function SignUpForm() {
                             textTransform: 'none'
                         }}
                         tabIndex={3}
-                        loading={isPending}
+                        loading={isLoading}
                     >
-                        {isPending ? t('text-btn-sign-up-pending') : t('text-btn-sign-up')}
+                        {isLoading ? t('text-btn-sign-up-pending') : t('text-btn-sign-up')}
 
                     </Button>
 
@@ -207,9 +294,6 @@ export default function SignUpForm() {
                             <Link href={"/sign-in"} className=" hover:underline"  > {t('text-caption-second')}</Link>
                         </Typography>
                     </Stack>
-
-
-
 
 
                 </Box>

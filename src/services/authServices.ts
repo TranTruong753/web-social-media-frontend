@@ -22,17 +22,8 @@ export const loginApi = async (data: LoginForm) => {
 }
 
 export const signupApi = async (data: SignupForm) => {
-  try {
-    const res = await axios
+  return await axios
       .post(`${API_URL}/auth/register`, data)
-
-    return res
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(error.response?.data?.message || "register failed")
-    }
-    throw error
-  }
 }
 
 export const activateAccountApi = async (data: ActiveForm) => {
