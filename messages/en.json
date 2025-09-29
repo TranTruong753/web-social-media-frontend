@@ -52,8 +52,8 @@
             "password": "Be at least 8 characters long!"
         },
         "text-error-form-submit": {
-            "email" : "email already exists!",
-            "error" : "There is an error with the system, we will fix it soon!"
+            "email": "email already exists!",
+            "error": "There is an error with the system, we will fix it soon!"
         }
     },
     "ActivatePage": {
@@ -63,6 +63,16 @@
         "text-btn-activate": "Activate",
         "text-btn-activate-pending": "Loading",
         "text-success": "You have successfully activated your account! Return to",
-        "text-link-return": "login page"
+        "text-link-return": "login page",
+        "text-router" : {
+            "title": "Return to login page after ",
+            "unit": " seconds"
+        },
+        "text-form-submit": {
+            "success": "Activation successful! Go to sign in link after 5 seconds!",
+            "error": "There is an error with the system, we will fix it soon!",
+            "failed": "The activation code is invalid or has expired!"
+        },
+        "text-resend-code" : "Submit request next time: "
     }
 }

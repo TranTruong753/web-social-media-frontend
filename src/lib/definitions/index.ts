@@ -60,7 +60,9 @@ export const SignupFormSchema = z.object({
 
 export type FormSignUpType = z.infer<typeof SignupFormSchema>
 
-export type FormSendEmail = z.infer<typeof SendEmailForm>;
+export type FormSendEmailType = z.infer<typeof SendEmailForm>;
+
+export type FormActivateType = z.infer<typeof ActivateFormSchema>;
 
 export type FormState =
   | {

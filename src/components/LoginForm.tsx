@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { forgetPassword } from "@/services/authServices";
 import ClearIcon from '@mui/icons-material/Clear';
-import { FormSendEmail, SendEmailForm } from "@/lib/definitions";
+import { FormSendEmailType, SendEmailForm } from "@/lib/definitions";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -187,7 +187,7 @@ function ForgetPwModal({ open, handleClose }: ForgetPwModalInterface) {
         formState: { errors },
         setError,
         reset,
-    } = useForm<FormSendEmail>({
+    } = useForm<FormSendEmailType>({
         resolver: zodResolver(SendEmailForm),
         defaultValues: {
             email_forget: ""
@@ -203,7 +203,7 @@ function ForgetPwModal({ open, handleClose }: ForgetPwModalInterface) {
         return handleClose()
     }
 
-    const onSubmit: SubmitHandler<FormSendEmail> = async (data) => {
+    const onSubmit: SubmitHandler<FormSendEmailType> = async (data) => {
         setIsLoading(true)
 
         try {
@@ -264,7 +264,7 @@ function ForgetPwModal({ open, handleClose }: ForgetPwModalInterface) {
                                 label="Email"
                                 autoComplete="email"
                                 autoFocus
-                                required={true}                   
+                                required={true}
                                 error={!!errors.email_forget}
                                 helperText={errors.email_forget?.message ? errors.email_forget?.message : " "}
                             />

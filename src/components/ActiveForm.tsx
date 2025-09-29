@@ -1,17 +1,18 @@
 'use client'
 import { Box, Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
-import React, { useActionState } from "react";
+import React from "react";
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useTranslations } from "next-intl";
 import { useNotifications } from "@toolpad/core";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sleep } from "@/lib/utils";
-import { ActivateFormSchema } from "@/lib/definitions";
+import { ActivateFormSchema, FormActivateType } from "@/lib/definitions";
 import { activateAccountApi, resendCodeApi } from "@/services/authServices";
-import { useCountdown } from "@/hooks/useCountdown";
-
-
+import { useCountdown, useCountdownVer2 } from "@/hooks/useCountdown";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 
 const COUNTDOWN_EVENT = 'countdown-update';
 
@@ -26,88 +27,74 @@ export default function ActiveForm() {
 
     const id = searchParams.get("id")
 
-    const [countdown, setCountdown] = React.useState(5)
+    const [isLoading, setIsLoading] = React.useState(false)
 
-    const activateAccount = async (
-        _: any,
-        formData: FormData
-    ) => {
+    const [isSuccess, setIsSuccess] = React.useState(false)
+
+    const { countdown, startCountdown } = useCountdownVer2();
+
+    const formInitialState = {
+        codeId: ""
+    }
+
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormActivateType>({
+        resolver: zodResolver(ActivateFormSchema),
+        defaultValues: formInitialState
+    })
+
+
+    const onSubmit: SubmitHandler<FormActivateType> = async (data) => {
+        if (!id) return notifications.show("There is an error with the system, we will fix it soon!", {
+            severity: "error",
+        });
+        setIsLoading(true)
         const values = {
             id: id,
-            codeId: formData.get('activeCode') as string,
+            codeId: data.codeId,
         }
-
-        const validatedFields = ActivateFormSchema.safeParse(values)
-
-        if (!validatedFields.success) {
-            return {
-                errors: validatedFields.error.flatten().fieldErrors,
-                values,
-            }
-        }
-
         try {
             await sleep(2000);
             const res = await activateAccountApi(values) // axios throw nếu lỗi
             if (res?.status) {
-                console.log("res", res)
-                return {
-                    success: true,
-                    message: "Kích hoạt tài khoản thông tin thành công!"
-                };
+                startCountdown(5)
+                setIsSuccess(true)
+                return notifications.show(t('text-form-submit.success'), {
+                    severity: "info",
+                });
             }
-            return { success: true, message: "CÓ lỗi gì đang xảy ra! chúng tôi sẽ khác phục sớm" };
-        } catch (err: any) {
-            console.log("err", err.message)
-            return {
-                values,
-                success: false,
-                message: err.message || "Kích hoạt tài khoản thất bại!", // ✅ thống nhất errors
-            }
-        }
 
-    }
+        } catch (error) {
+            setIsSuccess(false)
+            const err = error as AxiosError
+            if (err.response?.status === 500) return notifications.show(t('text-form-submit.failed'), { severity: 'error' })
 
-    const [state, action, isPending] = useActionState(activateAccount, undefined)
-
-
-    React.useEffect(() => {
-        if (!state?.message) return;
-
-        if (countdown <= 0 && state.success) {
-             router.push("/sign-in");
-             return
-        }
-        
-        const timer = setTimeout(() => {
-            setCountdown((prev) => prev - 1);
-        }, 1000);
-
-        return () => clearTimeout(timer);
-
-    }, [countdown, state])
-
-    React.useEffect(() => {
-
-        if (!state?.message) return;
-
-        if (state.success) {
-            notifications.show("Activation successful! Go to sign in link after 5 seconds", {
-                severity: "info",
-            });
-
-        } else {
-            notifications.show(state.message, {
+            return notifications.show(t('text-form-submit.error'), {
                 severity: "error",
             });
+
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    React.useEffect(() => {
+
+        if (countdown === 0) {
+            router.push("/sign-in");
+            return
         }
 
-    }, [state])
+    }, [countdown])
+
 
     return (
         <Container maxWidth="md">
 
-            {state?.success ?
+            {isSuccess ?
                 <React.Fragment>
                     <Paper sx={{ p: 4, mt: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <Stack alignItems={'center'} >
@@ -116,7 +103,7 @@ export default function ActiveForm() {
                                 <Link href={"/sign-in"} className=" hover:underline"  > {t('text-link-return')}</Link>
                             </Typography>
                             <Typography>
-                                Activation successful! Go to sign in link after {countdown} seconds
+                                {t('text-router.title')} {countdown} {t('text-router.unit')} 
                             </Typography>
                         </Stack>
                     </Paper>
@@ -132,20 +119,29 @@ export default function ActiveForm() {
                             </Typography>
 
 
-                            <Box noValidate action={action} component="form" sx={{ mt: 1, width: '100%' }}>
+                            <Box noValidate
+                                // action={action} 
+                                onSubmit={handleSubmit(onSubmit)}
+                                component="form" sx={{ mt: 1, width: '100%' }}>
 
-                                <TextField
-                                    size="small"
-                                    margin="normal"
-                                    fullWidth
-                                    id="activeCode"
-                                    label={t('text-field-codeId')}
-                                    name="activeCode"
-                                    sx={{ mb: 0 }}
-                                    error={!!state?.errors?.codeId}
-                                    helperText={state?.errors?.codeId ? state?.errors?.codeId : " "}
-                                    defaultValue={state?.values?.codeId ?? ''}
+                                <Controller
+                                    control={control}
+                                    name="codeId"
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            size="small"
+                                            margin="normal"
+                                            fullWidth
+                                            id="codeId"
+                                            label={t('text-field-codeId')}
+                                            sx={{ mb: 0 }}
+                                            error={!!errors.codeId}
+                                            helperText={errors.codeId ? errors.codeId.message : " "}                             
+                                        />
+                                    )}
                                 />
+
 
                                 <Button
                                     type="submit"
@@ -157,12 +153,12 @@ export default function ActiveForm() {
                                         textTransform: 'none'
                                     }}
                                     tabIndex={3}
-                                    loading={isPending}
+                                    loading={isLoading}
                                 >
-                                    {isPending ? t('text-btn-activate-pending') : t('text-btn-activate')}
+                                    {isLoading ? t('text-btn-activate-pending') : t('text-btn-activate')}
                                 </Button>
 
-                                <ResendCodeComponent id={id} t={t}/>
+                                <ResendCodeComponent id={id} t={t} />
 
                             </Box>
                         </Paper>
@@ -178,13 +174,15 @@ export default function ActiveForm() {
 
 type ResendCodeComponentType = {
     id: string | null,
-    t : ReturnType<typeof useTranslations>
+    t: ReturnType<typeof useTranslations>
 }
 
 
-function ResendCodeComponent({id, t }: ResendCodeComponentType) {
+function ResendCodeComponent({ id, t }: ResendCodeComponentType) {
 
-    const { startCountdown, getCountdown, isCounting } = useCountdown();
+    const notifications = useNotifications()
+
+    const { startCountdown, getCountdown } = useCountdown();
 
     const [displayCountdown, setDisplayCountdown] = React.useState(getCountdown());
 
@@ -206,13 +204,11 @@ function ResendCodeComponent({id, t }: ResendCodeComponentType) {
         startCountdown(30)
 
         try {
-            const res = await resendCodeApi(id)
-            console.log("res", res)
-            if (res.status === 201) {
-                console.log("gửi thành công!")
-            }
+            await resendCodeApi(id)
         } catch (error) {
-
+            return notifications.show(t('text-form-submit.error'), {
+                severity: "error",
+            });
         }
     }
 
@@ -224,7 +220,7 @@ function ResendCodeComponent({id, t }: ResendCodeComponentType) {
                     color: "#919EAB",
                     textAlign: "center"
                 }}>
-                    Gửi yêu cầu lần tiếp theo: {displayCountdown}s
+                   {t('text-resend-code')} {displayCountdown}s
                 </Typography>
             ) : (
                 <Typography component={'span'} variant="caption" noWrap fontSize={'14px'} fontWeight={'normal'}>

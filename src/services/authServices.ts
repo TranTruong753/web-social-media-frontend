@@ -23,43 +23,25 @@ export const loginApi = async (data: LoginForm) => {
 
 export const signupApi = async (data: SignupForm) => {
   return await axios
-      .post(`${API_URL}/auth/register`, data)
+    .post(`${API_URL}/auth/register`, data)
 }
 
 export const activateAccountApi = async (data: ActiveForm) => {
-  try {
-    const res = await axios
-      .post(`${API_URL}/auth/check-code`, data)
-
-    return res
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(error.response?.data?.message || "Activate failed")
-    }
-    throw error
-  }
+  return await axios
+    .post(`${API_URL}/auth/check-code`, data)
 }
 
 export const resendCodeApi = async (id: string) => {
-  try {
-    const res = await axios
-      .post(`${API_URL}/auth/resend-code`, { id })
-
-    return res
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(error.response?.data?.message || "Resend code failed")
-    }
-    throw error
-  }
+  return await axios
+    .post(`${API_URL}/auth/resend-code`, { id })
 }
 
 export const forgetPassword = async (email: string) => {
   return await axios
-      .post(`${API_URL}/auth/forget-password`, { email })
+    .post(`${API_URL}/auth/forget-password`, { email })
 }
 
-export const changePassword = async (id : string, codeId : string, password : string) => {
-    return await axios
-      .post(`${API_URL}/auth/change-password`, { id, codeId, password })
+export const changePassword = async (id: string, codeId: string, password: string) => {
+  return await axios
+    .post(`${API_URL}/auth/change-password`, { id, codeId, password })
 }

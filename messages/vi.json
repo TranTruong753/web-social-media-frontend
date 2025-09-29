@@ -63,6 +63,16 @@
         "text-btn-activate": "Kích hoạt",
         "text-btn-activate-pending": "Đang tải",
         "text-success": "Bạn đã kích hoạt tài khoản thành công! trờ về ",
-        "text-link-return": "trang đăng nhập"
+        "text-link-return": "trang đăng nhập",
+        "text-router": {
+            "title": "Trở về trang đăng nhập sau ",
+            "unit": " giây"
+        },
+        "text-error-form-submit": {
+            "success": "Kích hoạt thành công! Đi đến liên kết đăng nhập sau 5 giây!",
+            "error": "có lỗi xảy ra với hệ thống, chúng tôi sẽ sớm khắc phục được!",
+            "failed": "Mã kích hoạt không hợp lệ hoặc đã hết hạn!"
+        },
+        "text-resend-code": "Gửi yêu cầu lần tiếp theo: "
     }
 }
