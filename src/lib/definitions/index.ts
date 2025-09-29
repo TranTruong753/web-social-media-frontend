@@ -31,12 +31,12 @@ export const ChangePwForm = z.object({
 
 export const SignupFormSchema = z.object({
   lastName: z.string().trim().min(1, { message: "Last name is required." }),
-  firstName: z.string().trim().min(1, { message: "Firts name is required." }),
+  firstName: z.string().trim().min(1, { message: "First name is required." }),
   phone: z.string()
     .regex(/^0\d{9,10}$/, { message: "Please enter a valid phone." }),
   birthDate: z.date({
-    message: "Birth date is required.",
-  }).max(new Date(), { message: "Birth date cannot be in the future." })
+    message: "birthDate",
+  }).max(new Date(), { message: "birthDate-max" })
     .refine(
       (date) => {
         const today = new Date();
@@ -47,7 +47,7 @@ export const SignupFormSchema = z.object({
         );
         return date <= minDate;
       },
-      { message: "You must be at least 16 years old." }
+      { message: "birthDate-required" }
     ).
     nullable(),
   email: z.string().email({ message: 'Please enter a valid email.' }).trim(),

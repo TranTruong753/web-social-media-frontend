@@ -13,6 +13,13 @@
         "text-error-form": {
             "email": "Vui lòng nhập email hợp lệ!",
             "password": "Phải dài ít nhất 8 ký tự!"
+        },
+        "forget-form": {
+            "title": "Quên mật khẩu",
+            "text": "Vui lòng nhập email tài khoản của bạn",
+            "email": "Vui lòng nhập email hợp lệ!",
+            "text-btn-send": "Gửi mã",
+            "text-btn-cancel": "Hủy"
         }
     },
     "SignUpPage": {
@@ -33,7 +40,21 @@
         "text-caption": "Bạn đã có tài khoản?",
         "text-caption-second": "Đăng nhập",
         "text-btn-sign-up": "Đăng ký",
-        "text-btn-sign-up-pending": "Đang tải"
+        "text-btn-sign-up-pending": "Đang tải",
+        "text-error-form": {
+            "lastName": "Vui lòng nhập họ!",
+            "firstName": "Vui lòng nhập tên!",
+            "birthDate": "Vui lòng nhập ngày sinh!",
+            "birthDate-required": "Bạn phải từ 16 tuổi trờ lên!",
+            "birthDate-max": "Năm sinh vượt quá thời gian hiện tại!",
+            "phone": "Vui lòng nhập số điện thoại hợp lệ!",
+            "email": "Vui lòng nhập email hợp lệ!",
+            "password": "Phải dài ít nhất 8 ký tự!"
+        },
+        "text-error-form-submit": {
+            "email": "email này đã tồn tại!",
+            "error": "có lỗi xảy ra với hệ thống, chúng tôi sẽ sớm khắc phục được!"
+        }
     },
     "ActivatePage": {
         "title": "Kích hoạt tài khoản",

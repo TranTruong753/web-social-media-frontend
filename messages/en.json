@@ -13,6 +13,13 @@
         "text-error-form": {
             "email": "Please enter a valid email!",
             "password": "Be at least 8 characters long!"
+        },
+        "forget-form": {
+            "title": "Forget password",
+            "text": "Please enter your email account",
+            "text-error-email": "Please enter a valid email!",
+            "text-btn-send": "Send Code",
+            "text-btn-cancel": "Cancel"
         }
     },
     "SignUpPage": {
@@ -33,7 +40,21 @@
         "text-caption": "Already have an account?",
         "text-caption-second": "Sign in",
         "text-btn-sign-up": "Sign up",
-        "text-btn-sign-up-pending": "Loading"
+        "text-btn-sign-up-pending": "Loading",
+        "text-error-form": {
+            "lastName": "Last name is required!",
+            "firstName": "First name is required!",
+            "birthDate": "BirthDate is required!",
+            "birthDate-required": "You must be at least 16 years old!",
+            "birthDate-max": "Birth date cannot be in the future!",
+            "email": "Please enter a valid email!",
+            "phone": "Please enter a valid phone!",
+            "password": "Be at least 8 characters long!"
+        },
+        "text-error-form-submit": {
+            "email" : "email already exists!",
+            "error" : "There is an error with the system, we will fix it soon!"
+        }
     },
     "ActivatePage": {
         "title": "Activate account",

@@ -30,7 +30,7 @@ export default function SignUpForm() {
         firstName: "",
         gender: "male",
         phone: "",
-        birthDate: null,
+        birthDate: undefined,
         email: "",
         password: ""
     }
@@ -40,8 +40,6 @@ export default function SignUpForm() {
         handleSubmit,
         formState: { errors },
         setError,
-        clearErrors,
-        reset,
     } = useForm<FormSignUpType>({
         resolver: zodResolver(SignupFormSchema),
         defaultValues: formInitialState
@@ -76,14 +74,14 @@ export default function SignUpForm() {
         } catch (error) {
             const err = error as AxiosError
 
-            if(err.response?.status === 500) {
-                notifications.show( "email already exists", { severity: 'error' })
-                return setError('email',{
-                    message: 'email already exists'
+            if (err.response?.status === 500) {
+                notifications.show(t('text-error-form-submit.email'), { severity: 'error' })
+                return setError('email', {
+                    message: t('text-error-form-submit.email')
                 })
             }
-          
-            return notifications.show(error + "", { severity: 'error' })
+
+            return notifications.show( t('text-error-form-submit.error'), { severity: 'error' })
 
         } finally {
             setIsLoading(false)
@@ -118,7 +116,7 @@ export default function SignUpForm() {
 
                 <Box component={'span'} sx={{ m: 1, width: '100%', height: '1px', background: '#aaa' }}></Box>
 
-                <Box noValidate component="form" 
+                <Box noValidate component="form"
                     onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
 
                     <Stack direction="row" spacing={1} marginBottom={2}>
@@ -135,7 +133,7 @@ export default function SignUpForm() {
                                     label={t('text-field-ln')}
                                     sx={{ mb: 0 }}
                                     error={!!errors.lastName}
-                                    helperText={errors.lastName?.message ? errors.lastName.message : " "}                          
+                                    helperText={errors.lastName?.message ? t('text-error-form.lastName') : " "}
                                 />
                             )}
                         />
@@ -149,10 +147,10 @@ export default function SignUpForm() {
                                     margin="normal"
                                     fullWidth
                                     id="firstName"
-                                    label={t('text-field-fn')}                       
+                                    label={t('text-field-fn')}
                                     sx={{ mb: 0 }}
                                     error={!!errors.firstName}
-                                    helperText={errors.firstName?.message ? errors.firstName.message : " "}                        
+                                    helperText={errors.firstName?.message ? t('text-error-form.firstName') : " "}
                                 />
                             )}
                         />
@@ -171,7 +169,6 @@ export default function SignUpForm() {
                                     onChange={(newValue) => {
                                         onChange(newValue ? newValue.toDate() : null); // ✅ convert về Date | null
                                     }}
-
                                     format="DD/MM/YYYY"
                                     sx={{
 
@@ -185,12 +182,14 @@ export default function SignUpForm() {
 
                                     slotProps={{
                                         textField: {
-                                            id: 'birthDate',                                        
+                                            id: 'birthDate',
                                             size: 'small',
                                             fullWidth: true,
                                             required: true,
                                             error: !!errors.birthDate,
-                                            helperText: errors.birthDate?.message ?? " ",                                   
+                                            helperText: errors.birthDate
+                                                ? t(`text-error-form.${errors.birthDate.message}`)
+                                                : ' '
                                         }
                                     }}
                                 />
@@ -226,7 +225,7 @@ export default function SignUpForm() {
                                 label={t('text-field-phone')}
                                 sx={{ mb: 0 }}
                                 error={!!errors.phone}
-                                helperText={errors.phone ? errors.phone.message : " "}                         
+                                helperText={errors.phone ? t('text-error-form.phone'): " "}
                             />
                         )}
                     />
@@ -243,10 +242,10 @@ export default function SignUpForm() {
                                 margin="normal"
                                 fullWidth
                                 id="email"
-                                label="Email"                        
+                                label="Email"
                                 sx={{ mb: 0 }}
                                 error={!!errors.email}
-                                helperText={errors.email ? errors.email.message : " "}
+                                helperText={errors.email ? t('text-error-form.email') : " "}
                             // inputProps={{ tabIndex: 1 }}
                             />
                         )}
@@ -260,13 +259,13 @@ export default function SignUpForm() {
                                 {...field}
                                 size="small"
                                 margin="normal"
-                                fullWidth                         
+                                fullWidth
                                 label={t('text-field-pw')}
                                 type="password"
                                 id="password"
-                                sx={{ mb: 0 }}              
+                                sx={{ mb: 0 }}
                                 error={!!errors.password}
-                                helperText={errors.password ? errors.password.message : " "}                        
+                                helperText={errors.password ? t('text-error-form.password') : " "}
                             />
                         )}
                     />
