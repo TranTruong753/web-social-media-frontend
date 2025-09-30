@@ -64,15 +64,30 @@
         "text-btn-activate-pending": "Loading",
         "text-success": "You have successfully activated your account! Return to",
         "text-link-return": "login page",
-        "text-router" : {
+        "text-router": {
             "title": "Return to login page after ",
             "unit": " seconds"
         },
         "text-form-submit": {
             "success": "Activation successful! Go to sign in link after 5 seconds!",
             "error": "There is an error with the system, we will fix it soon!",
-            "failed": "The activation code is invalid or has expired!"
+            "failed": "The activation code is invalid or has expired!",
+            "conflict": "Account has already been activated"
         },
-        "text-resend-code" : "Submit request next time: "
+        "text-resend-code": "Submit request next time: "
+    },
+    "ResetPasswordPage": {
+        "title": "Change password",
+        "text-field-pw": "New password",
+        "text-btn-change": "Change",
+        "text-btn-change-pending": "Loading",
+        "text-caption": "Already have an account?",
+        "text-link": "Sign in",
+        "text-error-form": {
+            "password": "Be at least 8 characters long!"
+        },
+        "text-success" : "Password changed successfully!",
+        "text-error-link": "Invalid or expired link! Please resend email with new link",
+        "text-error" : "There is an error with the system, we will fix it soon!"
     }
 }

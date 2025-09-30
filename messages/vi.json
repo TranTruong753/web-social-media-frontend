@@ -71,8 +71,23 @@
         "text-error-form-submit": {
             "success": "Kích hoạt thành công! Đi đến liên kết đăng nhập sau 5 giây!",
             "error": "có lỗi xảy ra với hệ thống, chúng tôi sẽ sớm khắc phục được!",
-            "failed": "Mã kích hoạt không hợp lệ hoặc đã hết hạn!"
+            "failed": "Mã kích hoạt không hợp lệ hoặc đã hết hạn!",
+            "conflict": "Tài khoản này đã được kích hoạt!"
         },
         "text-resend-code": "Gửi yêu cầu lần tiếp theo: "
+    },
+    "ResetPasswordPage": {
+        "title": "Thay đổi mật khẩu",
+        "text-field-pw": "Mật khẩu mới",
+        "text-btn-change": "Thay đổi",
+        "text-btn-change-pending": "Đang tải",
+        "text-caption": "Bạn đã có tài khoản?",
+        "text-link": "Đăng nhập",
+        "text-error-form": {
+            "password": "Phải dài ít nhất 8 ký tự!"
+        },
+        "text-success": "Thay đổi mật khẩu thành công!",
+        "text-error-link": "Đường dẫn không hợp lệ hoặc đã hết hạn! vui lòng gửi lại email đường dẫn mới",
+        "text-error": "có lỗi xảy ra với hệ thống, chúng tôi sẽ sớm khắc phục được!"
     }
 }

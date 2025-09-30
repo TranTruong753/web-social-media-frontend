@@ -22,7 +22,7 @@ export const SendEmailForm = z.object({
   email_forget: z.string().trim().min(1, { message: "Email is required." }).email({ message: 'Please enter a valid email.' }),
 })
 
-export const ChangePwForm = z.object({
+export const ChangePwFormSchema = z.object({
   password: z.string()
     .min(8, { message: 'Be at least 8 characters long' })
     .trim(),
@@ -59,6 +59,8 @@ export const SignupFormSchema = z.object({
 })
 
 export type FormSignUpType = z.infer<typeof SignupFormSchema>
+
+export type FormChangePwType = z.infer<typeof ChangePwFormSchema>
 
 export type FormSendEmailType = z.infer<typeof SendEmailForm>;
 

@@ -8,15 +8,20 @@ import { changePassword } from "@/services/authServices";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AxiosError } from "axios";
 import { sleep } from "@/lib/utils";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChangePwFormSchema, FormChangePwType } from "@/lib/definitions";
+import { useTranslations } from "next-intl";
 
 export default function ResetPwForm() {
 
-    const [isLoading, setIsLoading] = React.useState(false)
-    const [fieldPw, setFieldPw] = React.useState('')
-    const [fieldPwError, setFieldPwError] = React.useState('')
+    const t = useTranslations('ResetPasswordPage');
+
     const notifications = useNotifications()
 
     const searchParams = useSearchParams()
+
+    const [isLoading, setIsLoading] = React.useState(false)
 
     const id = searchParams.get("id")
 
@@ -24,36 +29,39 @@ export default function ResetPwForm() {
 
     const router = useRouter()
 
-    const resetValue = () => {
-        setFieldPw('')
-        setFieldPwError('')
-    }
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        setError,
+        reset,
+    } = useForm<FormChangePwType>({
+        resolver: zodResolver(ChangePwFormSchema),
+        defaultValues: {
+            password: ""
+        }
+    });
 
-    const handleResetPw = async () => {
-        console.log('id', !id)
-        console.log('codeId', !codeId)
-        console.log("!id || !codeId", !id || !codeId)
-        if (!id || !codeId) return
-
-        if (fieldPw === '') return setFieldPwError('Password cannot be blank!')
+    const onSubmit: SubmitHandler<FormChangePwType> = async (data) => {
+        if (!id || !codeId) return notifications.show(t('text-error-link'), { severity: 'error' })
 
         setIsLoading(true)
 
-        setFieldPwError('')
-
         try {
-            const res = await changePassword(id, codeId, fieldPw)
-            if (res.status){
-                notifications.show('Update password success!', { severity: 'success' })
+            const res = await changePassword(id, codeId, data.password)
+            if (res.status) {
+                notifications.show(t('text-success'), { severity: 'success' })
                 await sleep(2000)
                 router.push('/sign-in')
             }
+
         } catch (error) {
-            console.log("error", error)
-            if (error instanceof AxiosError) return notifications.show(error.response?.data?.message + "", { severity: 'error' })
+            const err = error as AxiosError
 
-            return notifications.show(error + "", { severity: 'error' })
+            if (err.response?.status === 404 || err.response?.status === 400)
+                return notifications.show(t('text-error-link'), { severity: 'error' })
 
+            return notifications.show(t('text-error'), { severity: 'error' })
         } finally {
             setIsLoading(false)
         }
@@ -66,33 +74,36 @@ export default function ResetPwForm() {
                 <LockResetIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
 
                 <Typography component="h1" variant="h5" noWrap fontSize={'21px'} fontWeight={'bold'}>
-                    Reset password
+                    {t('title')}
                 </Typography>
 
 
-                <Box noValidate component="form" sx={{ mt: 1, width: '100%' }}>
-                    <TextField
-                        size="small"
-                        margin="normal"
-                        fullWidth
+                <Box id="form-reset" noValidate component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
+                    <Controller
+                        control={control}
                         name="password"
-                        label={'New password'}
-                        type="password"
-                        id="password"
-                        autoComplete="password"
-                        error={!!fieldPwError}
-                        helperText={fieldPwError ? fieldPwError : " "}
-                        sx={{ mb: 0 }}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                            setFieldPw(event.target.value);
-                        }}
-                    // inputProps={{ tabIndex: 2 }}
-                    // defaultValue={state?.values?.password ?? ''}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                size="small"
+                                margin="normal"
+                                fullWidth
+                                label={t('text-field-pw')}
+                                type="password"
+                                id="password"
+                                autoComplete="password"
+                                error={!!errors.password}
+                                helperText={errors.password ? t('text-error-form.password') : " "}
+                                sx={{ mb: 0 }}
+                            />
+                        )}
                     />
+
                 </Box>
 
                 <Button
-                    // type="submit"
+                    form={"form-reset"}
+                    type="submit"
                     fullWidth
                     variant="contained"
                     sx={{
@@ -101,37 +112,18 @@ export default function ResetPwForm() {
                         textTransform: 'none'
                     }}
                     tabIndex={3}
-                    // disabled={isPending}
                     loading={isLoading}
-                    onClick={() => handleResetPw()}
+
                 >
-                    {isLoading ? 'Loading' : 'Change'}
+                    {isLoading ? t('text-btn-change-pending') : t('text-btn-change')}
 
                 </Button>
-
-                {/* <Button
-                    fullWidth
-                    variant="outlined"
-                    sx={{
-                        // mt: 1,
-                        mb: 2,
-                        textTransform: 'none'
-                    }}
-                    tabIndex={3}
-                    // disabled={isPending}
-                    loading={isLoading}
-                    onClick={() => handleResetPw()}
-                >
-                    {isLoading ? 'Loading' : 'Provide new link'}
-
-                </Button> */}
-
 
 
                 <Stack alignItems={'center'}>
                     <Typography component={'span'} variant="caption" noWrap fontSize={'14px'} fontWeight={'normal'}>
-                        Already have an account?
-                        <Link href={"/sign-in"} className=" hover:underline">   Sign in</Link>
+                        {t('text-caption')}
+                        <Link href={"/sign-in"} className=" hover:underline"> {t('text-link')}</Link>
                     </Typography>
                 </Stack>
 

@@ -70,7 +70,9 @@ export default function ActiveForm() {
         } catch (error) {
             setIsSuccess(false)
             const err = error as AxiosError
-            if (err.response?.status === 500) return notifications.show(t('text-form-submit.failed'), { severity: 'error' })
+            if (err.response?.status === 404 || err.response?.status === 404 ) return notifications.show(t('text-form-submit.failed'), { severity: 'error' })
+
+            if (err.response?.status === 409 ) return notifications.show(t('text-form-submit.conflict'), { severity: 'error' })
 
             return notifications.show(t('text-form-submit.error'), {
                 severity: "error",
