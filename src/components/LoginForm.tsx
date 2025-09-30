@@ -1,18 +1,19 @@
 'use client'
-import { Box, Button, Container, FormLabel, IconButton, Modal, Paper, Stack, TextField, Typography } from "@mui/material";
-import { LockOutlined } from '@mui/icons-material';
+import { Box, Button, Container, FormLabel, IconButton, InputAdornment, Modal, Paper, Stack, TextField, Typography } from "@mui/material";
+import { LockOutlined, Visibility, VisibilityOff } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useTranslations } from "next-intl";
-import { useActionState, useEffect } from "react";
-import { signin } from "@/app/actions/auth";
 import { useNotifications } from "@toolpad/core";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { forgetPassword } from "@/services/authServices";
+import { forgetPassword, loginApi, resendCodeApi } from "@/services/authServices";
 import ClearIcon from '@mui/icons-material/Clear';
-import { FormSendEmailType, SendEmailForm } from "@/lib/definitions";
+import { FormSendEmailType, FormSignInType, SendEmailFormSchema, SigninFormSchema } from "@/lib/definitions";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { sleep } from "@/lib/utils";
+import { AxiosError } from "axios";
+import { InactiveAccountError } from "@/lib/type";
 
 
 
@@ -27,23 +28,57 @@ export default function LoginForm() {
     const router = useRouter();
 
     const [open, setOpen] = React.useState(false);
+
     const handleOpen = () => setOpen(true);
+
     const handleClose = () => setOpen(false);
 
-    const [state, action, isPending] = useActionState(signin, undefined)
+    const [isLoading, setIsLoading] = React.useState(false)
 
-    useEffect(() => {
-        if (!state?.message) return;
+    const [showPassword, setShowPassword] = React.useState(false);
 
-        notifications.show(state.message, {
-            severity: state.success ? "success" : "error",
-        });
+    const formInitialState = {
+        email: "",
+        password: ""
+    }
 
-        if (state.success) {
-            router.push("/");
-        }
-    }, [state]);
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormSignInType>({
+        resolver: zodResolver(SigninFormSchema),
+        defaultValues: formInitialState
+    });
 
+
+
+    const onSubmit: SubmitHandler<FormSignInType> = async (data) => {
+        setIsLoading(true)
+
+        try {
+            await sleep(2000);
+            const res = await loginApi(data) // axios throw nếu lỗi
+            if (res?.status) {
+                notifications.show(t('text-success'), { severity: "success" })
+                return router.push("/");
+            }
+        } catch (error) {
+            const err = error as AxiosError
+            if (err.response?.status === 401) {
+                return notifications.show(t('text-error-form-submit.account'), { severity: 'error' })
+            }
+
+            if (err.response?.status === 403) {
+                const { userId } = err.response.data as InactiveAccountError
+                notifications.show(t('text-info'), { severity: 'info' })
+                await resendCodeApi(userId)
+                return router.push(`/activate?id=${userId}`)
+            };
+            setIsLoading(false)
+            return notifications.show(t('text-error-form-submit.error'), { severity: 'error' })
+        } 
+    }
 
 
     return (
@@ -68,38 +103,64 @@ export default function LoginForm() {
 
                 <Box component={'span'} sx={{ m: 1, width: '100%', height: '1px', background: '#aaa' }}></Box>
 
-                <Box noValidate component="form" action={action} sx={{ mt: 1, width: '100%' }}>
-
-                    <TextField
-                        size="small"
-                        margin="normal"
-                        fullWidth
-                        id="email"
-                        label="Email"
+                <Box noValidate component="form"
+                    onSubmit={handleSubmit(onSubmit)}
+                    sx={{ mt: 1, width: '100%' }}>
+                    <Controller
                         name="email"
-                        autoComplete="email"
-                        autoFocus
-                        error={!!state?.errors?.email}
-                        helperText={state?.errors?.email ? t('text-error-form.email') : " "}
-                        sx={{ mb: 0 }}
-                        inputProps={{ tabIndex: 1 }}
-                        defaultValue={state?.values?.email ?? ''}
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                size="small"
+                                margin="normal"
+                                fullWidth
+                                id="email"
+                                label="Email"
+                                autoComplete="email"
+                                autoFocus
+                                error={!!errors.email}
+                                helperText={errors.email ? t('text-error-form.email') : " "}
+                                sx={{ mb: 0 }}
+                                inputProps={{ tabIndex: 1 }}
+
+                            />
+                        )}
                     />
 
-                    <TextField
-                        size="small"
-                        margin="normal"
-                        fullWidth
+                    <Controller
                         name="password"
-                        label={t('text-field-pw')}
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        error={!!state?.errors?.password}
-                        helperText={state?.errors?.password ? t('text-error-form.password') : " "}
-                        sx={{ mb: 0 }}
-                        inputProps={{ tabIndex: 2 }}
-                        defaultValue={state?.values?.password ?? ''}
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                size="small"
+                                margin="normal"
+                                fullWidth
+                                label={t('text-field-pw')}
+                                type={showPassword ? "text" : "password"}
+                                id="password"
+                                autoComplete="current-password"
+                                error={!!errors.password}
+                                helperText={errors.password ? t('text-error-form.password') : " "}
+                                sx={{ mb: 0 }}
+                                inputProps={{ tabIndex: 2 }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setShowPassword((prev) => !prev)}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+
+                        )}
                     />
 
                     <ForgetPwComponent t={t} handleOpen={handleOpen} />
@@ -114,9 +175,9 @@ export default function LoginForm() {
                             textTransform: 'none'
                         }}
                         tabIndex={3}
-                        loading={isPending}
+                        loading={isLoading}
                     >
-                        {isPending ? t('text-btn-sign-in-pending') : t('text-btn-sign-in')}
+                        {isLoading ? t('text-btn-sign-in-pending') : t('text-btn-sign-in')}
 
                     </Button>
 
@@ -130,7 +191,6 @@ export default function LoginForm() {
                         tabIndex={4}
                     >
                         {t('text-btn-sign-up')}
-
                     </Button>
 
 
@@ -188,7 +248,7 @@ function ForgetPwModal({ open, handleClose }: ForgetPwModalInterface) {
         setError,
         reset,
     } = useForm<FormSendEmailType>({
-        resolver: zodResolver(SendEmailForm),
+        resolver: zodResolver(SendEmailFormSchema),
         defaultValues: {
             email_forget: ""
         }

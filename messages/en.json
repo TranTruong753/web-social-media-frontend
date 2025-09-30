@@ -14,6 +14,12 @@
             "email": "Please enter a valid email!",
             "password": "Be at least 8 characters long!"
         },
+        "text-error-form-submit": {
+            "account": "Invalid Username/Password",
+            "error": "There is an error with the system, we will fix it soon!"
+        },
+        "text-success": "Login successful!",
+        "text-info": "Account not activated!",
         "forget-form": {
             "title": "Forget password",
             "text": "Please enter your email account",
@@ -47,8 +53,10 @@
             "birthDate": "BirthDate is required!",
             "birthDate-required": "You must be at least 16 years old!",
             "birthDate-max": "Birth date cannot be in the future!",
-            "email": "Please enter a valid email!",
-            "phone": "Please enter a valid phone!",
+            "email-valid": "Please enter a valid email!",
+            "email-conflict": "Email already exists!",
+            "phone-valid": "Please enter a valid phone!",
+            "phone-conflict": "Phone already exists!",
             "password": "Be at least 8 characters long!"
         },
         "text-error-form-submit": {
@@ -86,8 +94,8 @@
         "text-error-form": {
             "password": "Be at least 8 characters long!"
         },
-        "text-success" : "Password changed successfully!",
+        "text-success": "Password changed successfully!",
         "text-error-link": "Invalid or expired link! Please resend email with new link",
-        "text-error" : "There is an error with the system, we will fix it soon!"
+        "text-error": "There is an error with the system, we will fix it soon!"
     }
 }

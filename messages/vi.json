@@ -14,6 +14,12 @@
             "email": "Vui lòng nhập email hợp lệ!",
             "password": "Phải dài ít nhất 8 ký tự!"
         },
+        "text-error-form-submit": {
+            "account": "Username/Password không hợp lệ!",
+            "error": "có lỗi xảy ra với hệ thống, chúng tôi sẽ sớm khắc phục được!"
+        },
+        "text-success": "Đăng nhập thành công!",
+        "text-info": "Tài khoản chưa kích hoạt!",
         "forget-form": {
             "title": "Quên mật khẩu",
             "text": "Vui lòng nhập email tài khoản của bạn",
@@ -47,8 +53,10 @@
             "birthDate": "Vui lòng nhập ngày sinh!",
             "birthDate-required": "Bạn phải từ 16 tuổi trờ lên!",
             "birthDate-max": "Năm sinh vượt quá thời gian hiện tại!",
-            "phone": "Vui lòng nhập số điện thoại hợp lệ!",
-            "email": "Vui lòng nhập email hợp lệ!",
+            "email-valid": "Vui lòng nhập email hợp lệ!",
+            "email-Conflict": "Email đã tồn tại!",
+            "phone-valid": "Vui lòng nhập số điện thoại hợp lệ!",
+            "phone-Conflict": "Số điện thoại đã tồn tại!",
             "password": "Phải dài ít nhất 8 ký tự!"
         },
         "text-error-form-submit": {

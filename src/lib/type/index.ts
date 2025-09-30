@@ -36,3 +36,13 @@ export type SignupForm = {
   gender?: string;
   phone: string;
 }
+
+export interface InactiveAccountError {
+  message: string;
+  userId: string;
+}
+
+export interface ConflictExceptionSignUP {
+  message: string;
+  field: string;
+}

@@ -18,7 +18,7 @@ export const ActivateFormSchema = z.object({
   codeId: z.string().trim().min(1, { message: "codeId is required." })
 })
 
-export const SendEmailForm = z.object({
+export const SendEmailFormSchema = z.object({
   email_forget: z.string().trim().min(1, { message: "Email is required." }).email({ message: 'Please enter a valid email.' }),
 })
 
@@ -33,7 +33,7 @@ export const SignupFormSchema = z.object({
   lastName: z.string().trim().min(1, { message: "Last name is required." }),
   firstName: z.string().trim().min(1, { message: "First name is required." }),
   phone: z.string()
-    .regex(/^0\d{9,10}$/, { message: "Please enter a valid phone." }),
+    .regex(/^0\d{9,10}$/, { message: "phone-valid" }),
   birthDate: z.date({
     message: "birthDate",
   }).max(new Date(), { message: "birthDate-max" })
@@ -50,7 +50,7 @@ export const SignupFormSchema = z.object({
       { message: "birthDate-required" }
     ).
     nullable(),
-  email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
+  email: z.string().email({ message: 'email-valid' }).trim(),
   gender: z.string(),
   password: z
     .string()
@@ -60,9 +60,11 @@ export const SignupFormSchema = z.object({
 
 export type FormSignUpType = z.infer<typeof SignupFormSchema>
 
+export type FormSignInType = z.infer<typeof SigninFormSchema>
+
 export type FormChangePwType = z.infer<typeof ChangePwFormSchema>
 
-export type FormSendEmailType = z.infer<typeof SendEmailForm>;
+export type FormSendEmailType = z.infer<typeof SendEmailFormSchema>;
 
 export type FormActivateType = z.infer<typeof ActivateFormSchema>;
 

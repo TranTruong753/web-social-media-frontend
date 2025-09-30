@@ -1,5 +1,5 @@
 'use client'
-import { Box, Button, Container, FormControlLabel, FormLabel, Paper, Radio, RadioGroup, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, FormControlLabel, FormLabel, IconButton, InputAdornment, Paper, Radio, RadioGroup, Stack, TextField, Typography } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import { useTranslations } from "next-intl"; import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -16,6 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { sleep } from "@/lib/utils";
 import { signupApi } from "@/services/authServices";
 import { AxiosError } from "axios";
+import { ConflictExceptionSignUP } from "@/lib/type";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -48,10 +50,11 @@ export default function SignUpForm() {
 
     const [isLoading, setIsLoading] = React.useState(false)
 
+    const [showPassword, setShowPassword] = React.useState(false);
+
     const router = useRouter()
 
     const onSubmit: SubmitHandler<FormSignUpType> = async (data) => {
-        console.log("data", data)
         setIsLoading(true)
 
         const formatValues = {
@@ -62,26 +65,37 @@ export default function SignUpForm() {
             gender: data.gender,
             phone: data.phone,
         }
-        console.log("formatValues", formatValues)
 
         try {
             await sleep(2000);
             const res = await signupApi(formatValues) // axios throw nếu lỗi
             if (res?.status) {
-                console.log("res", res)
                 return router.push(`/activate?id=${res.data.user.id}`)
             }
         } catch (error) {
             const err = error as AxiosError
 
-            if (err.response?.status === 500) {
-                notifications.show(t('text-error-form-submit.email'), { severity: 'error' })
-                return setError('email', {
-                    message: t('text-error-form-submit.email')
-                })
+            if (err.response?.status === 409) {
+
+                const { field } = err.response.data as ConflictExceptionSignUP
+
+                if (field === 'phone') {
+                    notifications.show(t('text-error-form.phone-conflict'), { severity: 'error' })
+                    return setError('phone', {
+                        message: 'phone-conflict'
+                    })
+                }
+
+                if (field === 'email') {
+                    notifications.show(t('text-error-form.email-conflict'), { severity: 'error' })
+                    return setError('email', {
+                        message: 'email-conflict'
+                    })
+                }
+
             }
 
-            return notifications.show( t('text-error-form-submit.error'), { severity: 'error' })
+            return notifications.show(t('text-error-form-submit.error'), { severity: 'error' })
 
         } finally {
             setIsLoading(false)
@@ -225,7 +239,7 @@ export default function SignUpForm() {
                                 label={t('text-field-phone')}
                                 sx={{ mb: 0 }}
                                 error={!!errors.phone}
-                                helperText={errors.phone ? t('text-error-form.phone'): " "}
+                                helperText={errors.phone ? t(`text-error-form.${errors.phone.message}`) : " "}
                             />
                         )}
                     />
@@ -245,7 +259,7 @@ export default function SignUpForm() {
                                 label="Email"
                                 sx={{ mb: 0 }}
                                 error={!!errors.email}
-                                helperText={errors.email ? t('text-error-form.email') : " "}
+                                helperText={errors.email ? t(`text-error-form.${errors.email.message}`) : " "}
                             // inputProps={{ tabIndex: 1 }}
                             />
                         )}
@@ -261,11 +275,24 @@ export default function SignUpForm() {
                                 margin="normal"
                                 fullWidth
                                 label={t('text-field-pw')}
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 id="password"
                                 sx={{ mb: 0 }}
                                 error={!!errors.password}
                                 helperText={errors.password ? t('text-error-form.password') : " "}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setShowPassword((prev) => !prev)}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                         )}
                     />
