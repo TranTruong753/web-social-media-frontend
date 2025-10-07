@@ -34,17 +34,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-          <NextIntlClientProvider>    
-              <NotificationsProvider           
-                slotProps={{
-                  snackbar: {
-                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
-                    autoHideDuration: 2000
-                  },
-                }}
-              >
-                {children}
-              </NotificationsProvider>
+          <NextIntlClientProvider>
+            <NotificationsProvider
+              slotProps={{
+                snackbar: {
+                  anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                  autoHideDuration: 2000
+                },
+              }}
+            >
+
+              {children}
+            </NotificationsProvider>
 
           </NextIntlClientProvider>
         </AppRouterCacheProvider>

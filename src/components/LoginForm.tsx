@@ -64,6 +64,7 @@ export default function LoginForm() {
                 return router.push("/");
             }
         } catch (error) {
+            setIsLoading(false)
             const err = error as AxiosError
             if (err.response?.status === 401) {
                 return notifications.show(t('text-error-form-submit.account'), { severity: 'error' })
@@ -75,7 +76,6 @@ export default function LoginForm() {
                 await resendCodeApi(userId)
                 return router.push(`/activate?id=${userId}`)
             };
-            setIsLoading(false)
             return notifications.show(t('text-error-form-submit.error'), { severity: 'error' })
         } 
     }

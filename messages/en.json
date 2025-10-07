@@ -12,7 +12,7 @@
         "text-forget-pw": "Forget password?",
         "text-error-form": {
             "email": "Please enter a valid email!",
-            "password": "Be at least 8 characters long!"
+            "password": "Password is required!"
         },
         "text-error-form-submit": {
             "account": "Invalid Username/Password",
